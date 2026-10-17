@@ -112,6 +112,7 @@ border:1px solid var(--ln);background:#0b0e13;color:var(--tx);outline:0}
   <span class="sp"></span>
   <button class="d" id="bStopAll" data-t="tumunuDurdur"></button>
   <button id="bDoc" data-t="dokuman"></button>
+  <button id="bStore" data-t="magaza"></button>
   <button id="bCfg" data-t="ayarlar"></button>
   <button id="bDil" title="TR / EN">EN</button>
   <button id="bRst" data-t="reset"></button>
@@ -197,10 +198,18 @@ border:1px solid var(--ln);background:#0b0e13;color:var(--tx);outline:0}
   </div>
 </div>
 
+<!-- Magaza -->
+<div class="ov" id="ovStore" hidden>
+  <div class="bx">
+    <div class="bh"><span data-t="magaza"></span><input id="sQ" data-tp="magazaAra" autocomplete="off" style="flex:1;min-width:100px"><button id="bStoreX" data-t="kapat"></button></div>
+    <div class="bb"><div id="sBody" style="font-size:12.5px"></div></div>
+  </div>
+</div>
+
 <script>
 // ------------------------------------------------------------- dil
 var DIL={
-tr:{uygulamalar:'Uygulamalar:',projeler:'Projeler',yukle:'yükle',ara:'ara…  ( / )',dosyaYok:'dosya seçilmedi',kaydet:'Kaydet',
+tr:{magaza:'Mağaza',magazaAra:'ara: led, sıcaklık…',magazaYok:'eşleşen proje yok',magazaOffline:'cyd.nuvaka.com erişilemiyor',magazaIndir:'İndir',magazaIndi:' dosya karta indirildi',uygulamalar:'Uygulamalar:',projeler:'Projeler',yukle:'yükle',ara:'ara…  ( / )',dosyaYok:'dosya seçilmedi',kaydet:'Kaydet',
 calistir:'Çalıştır',durdur:'Durdur',tumunuDurdur:'Tümünü durdur',sil:'Sil',konsol:'Konsol',kayitliLog:'Kayıtlı log',yenile:'Yenile',
 soloCalistir:'Solo başlat',modN:'Normal — panel açık, diğer projelerle yan yana (tıkla: Solo yap)',modS:'Solo — panel kapalı, tüm RAM projenin (tıkla: Normal yap)',modKaydedildi:'mod: ',
 temizle:'Temizle',dokuman:'Doküman',ayarlar:'Ayarlar',reset:'Yeniden başlat',sistem:'Sistem',
@@ -232,7 +241,7 @@ sifre:'Şifre',statikIp:'Statik IP (boş = DHCP)',maske:'Alt ağ maskesi',gecit:
 oz:{display:'Ekran',touch:'Dokunmatik',sd:'SD kart',rgb_led:'LED',light:'Işık sensörü',speaker:'Hoparlör',
 ble:'Bluetooth',tls:'HTTPS',threads:'Thread',inline:'Satır içi proje',persistent_log:'Kalıcı log',
 wifi_config:'Ağ ayarı',docs:'Doküman'}},
-en:{uygulamalar:'Apps:',projeler:'Projects',yukle:'upload',ara:'search…  ( / )',dosyaYok:'no file selected',kaydet:'Save',
+en:{magaza:'Store',magazaAra:'search: led, temperature…',magazaYok:'no matching project',magazaOffline:'cyd.nuvaka.com unreachable',magazaIndir:'Download',magazaIndi:' file(s) downloaded to the board',uygulamalar:'Apps:',projeler:'Projects',yukle:'upload',ara:'search…  ( / )',dosyaYok:'no file selected',kaydet:'Save',
 calistir:'Run',durdur:'Stop',tumunuDurdur:'Stop all',sil:'Delete',konsol:'Console',kayitliLog:'Saved log',yenile:'Refresh',
 soloCalistir:'Start solo',modN:'Normal — panel stays up, runs beside other projects (click: make Solo)',modS:'Solo — panel off, all RAM to the project (click: make Normal)',modKaydedildi:'mode: ',
 temizle:'Clear',dokuman:'Docs',ayarlar:'Settings',reset:'Restart',sistem:'System',
@@ -532,7 +541,7 @@ $('bCfgOk').onclick=function(){
 // ------------------------------------------------------------- dokuman
 /* Dokuman: Atolye Defteri (iki dilli egitim belgesi) yeni sekmede.
    Shift+tik: karttaki kisa docs.md eskisi gibi pencerede. */
-var DEFTER_URL='https://claude.ai/artifact/4G521TULDdx33YyWeC2XnE';
+var DEFTER_URL='https://cyd.nuvaka.com/defter/';
 $('bDoc').onclick=function(e){
   if(!(e&&e.shiftKey)){window.open(DEFTER_URL+'#'+dil,'_blank');return}
   $('docTxt').textContent='…';$('ovDoc').hidden=false;
@@ -547,10 +556,38 @@ $('bDocCp').onclick=function(){
   function yedek(){var ta=document.createElement('textarea');ta.value=x;document.body.appendChild(ta);
     ta.select();try{document.execCommand('copy');ok()}catch(e){}document.body.removeChild(ta)}};
 
+// ------------------------------------------------------------- magaza
+/* cyd.nuvaka.com Atolye'si: tarayici arar (CORS acik), Indir dosyayi karta yazar. Kart internete cikmaz. */
+var STORE='https://cyd.nuvaka.com/api/atolye',sTm=null,sSeq=0;
+function esc2(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+$('bStore').onclick=function(){$('ovStore').hidden=false;$('sQ').focus();storeAra()};
+$('bStoreX').onclick=function(){$('ovStore').hidden=true};
+$('sQ').oninput=function(){clearTimeout(sTm);sTm=setTimeout(storeAra,350)};
+function storeAra(){
+  var q=$('sQ').value.trim(),my=++sSeq,b=$('sBody');b.textContent='…';
+  fetch(STORE+'/search?limit=20&board=nodemcu'+(q?'&q='+encodeURIComponent(q):''))
+   .then(function(r){return r.json()}).then(function(r){
+     if(my!==sSeq)return;var it=r.items||[];
+     if(!it.length){b.textContent=t('magazaYok');return}
+     b.innerHTML=it.map(function(p){return '<div style="border:1px solid var(--ln);border-radius:6px;padding:8px 10px;margin-bottom:6px"><b>'+esc2(p.title)+'</b> <span style="opacity:.6;font-size:11px">'+esc2(p.author&&p.author.name||'anonim')+' · '+p.downloads+'</span> <button data-slug="'+esc2(p.slug)+'" style="float:right">'+t('magazaIndir')+'</button><div style="opacity:.7;margin-top:3px">'+esc2(p.summary)+'</div></div>'}).join('');
+     Array.prototype.forEach.call(b.querySelectorAll('button[data-slug]'),function(bt){bt.onclick=function(){storeIndir(bt.getAttribute('data-slug'),bt)}})})
+   .catch(function(){if(my===sSeq)b.textContent=t('magazaOffline')})}
+function storeIndir(slug,bt){
+  bt.disabled=true;
+  fetch(STORE+'/projects/'+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(p){
+    var fl=(p.files||[]).filter(function(f){return /\.(py|txt|md)$/i.test(f.name)}),i=0,n=0;
+    (function nx(){
+      if(i>=fl.length){bt.disabled=false;liste();return tst(n+t('magazaIndi'))}
+      var f=fl[i++];
+      fetch(STORE+'/projects/'+encodeURIComponent(slug)+'/files/'+f.id).then(function(r){return r.text()})
+       .then(function(txt){return fetch('/api/save?name='+encodeURIComponent(f.name),{method:'POST',body:txt})})
+       .then(function(){n++;nx()}).catch(nx)})()})
+   .catch(function(){bt.disabled=false;tst(t('magazaOffline'))})}
+
 // ------------------------------------------------------------- kisayollar
 document.onkeydown=function(e){
   var k=e.key,c=e.ctrlKey||e.metaKey,inp=/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'');
-  if(k==='Escape'){if(!$('ovCfg').hidden){$('ovCfg').hidden=true;return}if(!$('ovDoc').hidden){$('ovDoc').hidden=true;return}}
+  if(k==='Escape'){if(!$('ovCfg').hidden){$('ovCfg').hidden=true;return}if(!$('ovDoc').hidden){$('ovDoc').hidden=true;return}if(!$('ovStore').hidden){$('ovStore').hidden=true;return}}
   if(c&&(k==='s'||k==='S')){e.preventDefault();kaydet(true)}
   else if(c&&k==='Enter'){e.preventDefault();if(!cur)return tst(t('onceSec'));
     if(calisan.indexOf(cur)>=0)durdur(cur);else calistir(cur)}

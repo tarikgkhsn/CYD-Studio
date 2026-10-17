@@ -153,6 +153,7 @@ input[type=checkbox]{width:auto;margin-right:6px;vertical-align:-2px}
   <button id="bStopAll" class="d" data-t="tumunuDurdur"></button>
   <button id="bSys" data-t="panel"></button>
   <button id="bDoc" data-t="dokuman"></button>
+  <button id="bStore" data-t="magaza"></button>
   <button id="bCfg" data-t="ayarlar"></button>
   <button id="bDil" title="TR / EN">EN</button>
   <button id="bBoot" data-t="reset"></button>
@@ -325,6 +326,16 @@ while not cyd.should_stop():
   <div id="docBody"></div>
 </div></div>
 
+<div class="mask" id="mStore"><div class="modal doc">
+  <div class="docbar">
+    <b data-t="magaza"></b>
+    <input id="sQ" data-tp="magazaAra" autocomplete="off" style="flex:1;min-width:120px">
+    <button onclick="closeStore()" data-t="kapat"></button>
+  </div>
+  <div class="dochint" id="sNot"></div>
+  <div id="sBody" style="flex:1;overflow-y:auto;padding:10px 16px;font-size:12.5px"></div>
+</div></div>
+
 <div id="drop" data-t="birak"></div>
 <div id="toast"></div>
 
@@ -337,7 +348,7 @@ function $(i){return document.getElementById(i)}
    karta tek bayt maliyeti yok. Karttan gelen log satirlari cevrilmez -
    onlar icerik. Sade panel (boards/nodemcu) ayni anahtarlari kullanir. */
 var DIL={
-tr:{uygulamalar:'Uygulamalar:',bosta:'boşta',projeCalisiyor:' proje çalışıyor',baglantiYok:'bağlantı yok',
+tr:{magaza:'Mağaza',magazaAra:'ara: led, sıcaklık, ekran…',magazaNot:'cyd.nuvaka.com Atölyesi: paylaşılan projeleri ara, İndir deyince dosya karta yazılır.',magazaYok:'eşleşen proje yok',magazaOffline:'cyd.nuvaka.com erişilemiyor (internet var mı?)',magazaIndir:'İndir',magazaAc:'sayfası',magazaInd:'indirme',magazaIndi:' dosya karta indirildi',magazaVar:' zaten var. Üzerine yazılsın mı?',uygulamalar:'Uygulamalar:',bosta:'boşta',projeCalisiyor:' proje çalışıyor',baglantiYok:'bağlantı yok',
 tumunuDurdur:'Tümünü durdur',panel:'Panel',dokuman:'Doküman',ayarlar:'Ayarlar',reset:'Yeniden başlat',
 projeler:'Projeler',yeni:'+ yeni',yukle:'yükle',ara:'ara…  ( / )',dosyaYok:'dosya seçilmedi',
 kaydet:'Kaydet',calistir:'Çalıştır',durdur:'Durdur',kayitliLog:'Kayıtlı log',
@@ -393,7 +404,7 @@ suAn:'şu an: yön ',renk:', renk ',kaydedildiBuyuk:' — KAYDEDİLDİ',kaydedil
 wifiKaydedildi:'kaydedildi, kart yeniden başlatılıyor…',eslesenYok:'eşleşen yok',
 hicDosya:'Hiç dosya yok.<br>"+ yeni" ile oluştur ya da sürükleyip bırak.',kaydedilmemis:'Kaydedilmemiş değişiklikler var.',
 yeniAdVer:'Yeni ad:'},
-en:{uygulamalar:'Apps:',bosta:'idle',projeCalisiyor:' running',baglantiYok:'no connection',
+en:{magaza:'Store',magazaAra:'search: led, temperature, display…',magazaNot:'The cyd.nuvaka.com Workshop: search shared projects; Download writes the file to the board.',magazaYok:'no matching project',magazaOffline:'cyd.nuvaka.com unreachable (is there internet?)',magazaIndir:'Download',magazaAc:'page',magazaInd:'downloads',magazaIndi:' file(s) downloaded to the board',magazaVar:' already exists. Overwrite?',uygulamalar:'Apps:',bosta:'idle',projeCalisiyor:' running',baglantiYok:'no connection',
 tumunuDurdur:'Stop all',panel:'Panel',dokuman:'Docs',ayarlar:'Settings',reset:'Restart',
 projeler:'Projects',yeni:'+ new',yukle:'upload',ara:'search…  ( / )',dosyaYok:'no file selected',
 kaydet:'Save',calistir:'Run',durdur:'Stop',kayitliLog:'Saved log',
@@ -845,9 +856,48 @@ function renderDoc(){
   $('docBody').scrollTop=0;
   $('dRaw').textContent = docRaw ? t('bicimli') : t('hamMetin')}
 
+/* -------------------------------------------------------- magaza
+   cyd.nuvaka.com Atolye'sinden proje arar ve dosyayi dogrudan karta yazar.
+   Istekleri TARAYICI yapar (CORS acik, anahtar yok): kartin internete
+   cikmasi gerekmez, kartin RAM'i kullanilmaz. */
+var STORE='https://cyd.nuvaka.com/api/atolye',sTm=null,sSeq=0;
+function boardKey(){if(caps.platform==='esp8266')return 'nodemcu';if(caps.display!==false&&caps.touch===false)return 'oled';return 'cyd'}
+function esc2(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+$('bStore').onclick=function(){$('mStore').className='mask on';$('sNot').textContent=t('magazaNot');$('sQ').focus();storeAra()};
+function closeStore(){$('mStore').className='mask'}
+$('sQ').oninput=function(){clearTimeout(sTm);sTm=setTimeout(storeAra,350)};
+function storeAra(){
+  var q=$('sQ').value.trim(),my=++sSeq,b=$('sBody');b.innerHTML='<div style="padding:20px;color:var(--mut)">…</div>';
+  fetch(STORE+'/search?limit=20&board='+boardKey()+(q?'&q='+encodeURIComponent(q):''))
+   .then(function(r){return r.json()}).then(function(r){
+     if(my!==sSeq)return;var it=r.items||[];
+     if(!it.length){b.innerHTML='<div style="padding:20px;color:var(--mut)">'+t('magazaYok')+'</div>';return}
+     b.innerHTML=it.map(function(p){
+       return '<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
+         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>'+esc2(p.title)+'</b><span style="color:var(--mut);font-size:11px">'+esc2((p.boards||[]).join(', '))+' · '+esc2(p.author&&p.author.name||'anonim')+' · '+p.downloads+' '+t('magazaInd')+'</span>'+
+         '<span class="sp"></span><a href="https://cyd.nuvaka.com/atolye/?p='+encodeURIComponent(p.slug)+'" target="_blank" style="font-size:11px">'+t('magazaAc')+'</a> '+
+         '<button class="p mini" data-slug="'+esc2(p.slug)+'">'+t('magazaIndir')+'</button></div>'+
+         '<div style="color:var(--mut);margin-top:4px">'+esc2(p.summary)+'</div></div>'}).join('');
+     Array.prototype.forEach.call(b.querySelectorAll('button[data-slug]'),function(bt){bt.onclick=function(){storeIndir(bt.getAttribute('data-slug'),bt)}})})
+   .catch(function(){if(my===sSeq)b.innerHTML='<div style="padding:20px;color:var(--mut)">'+t('magazaOffline')+'</div>'})}
+function storeIndir(slug,bt){
+  bt.disabled=true;
+  fetch(STORE+'/projects/'+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(p){
+    var fl=(p.files||[]).filter(function(f){return /\.(py|txt|md)$/i.test(f.name)}),i=0,n=0;
+    var varOlan=fl.filter(function(f){return files.some(function(x){return (x.name||x)===f.name})});
+    if(varOlan.length&&!confirm(varOlan.map(function(f){return f.name}).join(', ')+t('magazaVar')))return bt.disabled=false;
+    (function next(){
+      if(i>=fl.length){bt.disabled=false;list();return toast(n+t('magazaIndi'),'g')}
+      var f=fl[i++];
+      fetch(STORE+'/projects/'+encodeURIComponent(slug)+'/files/'+f.id).then(function(r){return r.text()})
+       .then(function(txt){return fetch('/api/save?name='+encodeURIComponent(f.name),{method:'POST',body:txt})})
+       .then(function(r){return r.json()}).then(function(r){if(r.ok)n++;else toast(f.name+': '+r.error,'e');next()})
+       .catch(function(){toast(f.name+t('yuklenemedi'),'e');next()})})()})
+   .catch(function(){bt.disabled=false;toast(t('magazaOffline'),'e')})}
+
 /* Dokuman: Atolye Defteri (iki dilli egitim belgesi) yeni sekmede.
    Shift+tik: karttaki kisa docs.md eskisi gibi pencerede. */
-var DEFTER_URL='https://claude.ai/artifact/4G521TULDdx33YyWeC2XnE';
+var DEFTER_URL='https://cyd.nuvaka.com/defter/';
 $('bDoc').onclick=function(e){
   if(!(e&&e.shiftKey)){window.open(DEFTER_URL+'#'+dil,'_blank');return}
   $('mDoc').className='mask on';
