@@ -2,6 +2,8 @@
 
 **Browser-managed MicroPython project runner for ESP32 / ESP8266 boards.**
 
+**Website, docs and the Workshop (shared projects): https://cyd.nuvaka.com** · English: https://cyd.nuvaka.com/en/
+
 Prepare the board once; after that there is **no compiling at all**. Projects are
 plain `.py` files written or uploaded in the web panel, started and stopped with
 one click. Several projects can run side by side.

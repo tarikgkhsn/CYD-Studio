@@ -2,6 +2,8 @@
 
 **ESP32 / ESP8266 kartları için tarayıcıdan yönetilen MicroPython proje çalıştırıcı.**
 
+**Site, belgeler ve Atölye (paylaşılan projeler): https://cyd.nuvaka.com**
+
 Kart bir kez hazırlanır; ondan sonra **hiç derleme yapılmaz**. Projeler `.py`
 dosyası olarak panelden yazılır ya da yüklenir, tek tıkla çalıştırılır, durdurulur.
 Aynı anda birden fazla proje yan yana koşabilir.
