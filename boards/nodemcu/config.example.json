@@ -1,0 +1,21 @@
+{
+  "ssid": "WIFI_ADINIZ",
+  "password": "",
+  "ip": "192.168.0.215",
+  "netmask": "255.255.255.0",
+  "gateway": "192.168.0.1",
+  "dns": "192.168.0.1",
+  "ap_ssid": "ESP8266-Studio",
+  "ap_password": "cyd12345",
+  "autostart": [],
+  "hostname": "esp8266",
+  "splash": true,
+  "rotation": 0,
+  "bgr": false,
+  "cpu_freq": 80,
+  "txpower": null,
+  "wifi_pm": false,
+  "disable_bod": false,
+  "solo_once": false,
+  "solo_wifi": true
+}

@@ -1,0 +1,17 @@
+# WiFi sifreleri - repoya girmez, config.example.json'dan kopyala
+boards/*/config.json
+
+# gelistirici devir belgesi ve oturum kayitlari - yerel, repoya girmez
+CLAUDE.md
+oturum_gecmisi/
+_git/
+
+# buyuk / yerel
+arduino/
+backup/
+gelen/
+build_mpy/
+
+# python
+__pycache__/
+*.pyc

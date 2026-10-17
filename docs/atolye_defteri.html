@@ -1,0 +1,1400 @@
+<title>CYD Studio Atölye Defteri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F6F4; --surf:#FFFFFF; --surf2:#EDF1EE; --ink:#17211C; --muted:#5B6A63; --line:#D7DFDA;
+  --acc:#1E7A4C; --acc-ink:#0F5A36; --acc-soft:#DDF0E5; --sig:#B4460F; --sig-soft:#FBE7DA; --code:#F0F3F1; --code-ink:#1E2A24;
+  --kbd:#E3E9E5;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0F1412; --surf:#161C19; --surf2:#1C2420; --ink:#E4ECE7; --muted:#95A59D; --line:#28322D;
+  --acc:#4FC48C; --acc-ink:#8FE0B8; --acc-soft:#173225; --sig:#F0A06A; --sig-soft:#3A2416; --code:#121816; --code-ink:#D9E3DD; --kbd:#243029;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1412; --surf:#161C19; --surf2:#1C2420; --ink:#E4ECE7; --muted:#95A59D; --line:#28322D;
+  --acc:#4FC48C; --acc-ink:#8FE0B8; --acc-soft:#173225; --sig:#F0A06A; --sig-soft:#3A2416; --code:#121816; --code-ink:#D9E3DD; --kbd:#243029;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:0 64px}
+a{color:var(--acc-ink)}
+h1,h2,h3{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,28px);font-weight:700;margin-top:56px;padding-top:24px;border-top:2px solid var(--ink)}
+h3{font-size:17px;font-weight:700;margin-top:28px}
+p{margin:12px 0;max-width:68ch}
+ul,ol{max-width:68ch;padding-left:22px}li{margin:4px 0}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}nav.toc{position:static;border:0;padding:0;margin-bottom:8px}}
+header.top{padding-block:40px 20px;border-bottom:1px solid var(--line);margin-bottom:28px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:space-between}
+.eyebrow{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lead{font-size:17px;max-width:64ch;color:var(--muted)}
+.lead b{color:var(--ink)}
+.dil{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex:none;margin-top:4px}
+.dil button{border:0;background:var(--surf);color:var(--muted);font:600 12.5px "IBM Plex Sans",sans-serif;padding:7px 14px;cursor:pointer;letter-spacing:.06em}
+.dil button+button{border-left:1px solid var(--line)}
+.dil button.on{background:var(--acc);color:#fff}
+.dil button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:8px;font-size:13.5px}
+nav.toc ol{list-style:none;padding:0;margin:0;counter-reset:ch}
+nav.toc li{counter-increment:ch;margin:0}
+nav.toc a{display:flex;gap:10px;padding:6px 8px;border-radius:5px;color:var(--ink);text-decoration:none}
+nav.toc a::before{content:counter(ch,decimal-leading-zero);color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:12px;padding-top:2px}
+nav.toc a:hover{background:var(--surf2)}
+nav.toc .k{margin-top:14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+pre{background:var(--code);color:var(--code-ink);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;font:13.5px/1.55 "IBM Plex Mono",ui-monospace,Consolas,monospace;margin:12px 0;max-width:100%}
+code{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:.92em;background:var(--code);padding:1px 5px;border-radius:4px}
+pre code{background:none;padding:0;font-size:inherit}
+.file{display:inline-block;font:12px "IBM Plex Mono",monospace;color:var(--muted);margin:14px 0 -8px;padding:2px 8px;border:1px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0;background:var(--surf2)}
+.file+pre{margin-top:0;border-top-left-radius:0}
+.c{color:#6b7f75}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}
+@media(max-width:960px){.trio{grid-template-columns:1fr}}
+.trio>div{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.trio .t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.trio .g .t{color:var(--muted)}.trio .b .t{color:var(--acc-ink)}.trio .n .t{color:var(--sig)}
+.trio .b{border-color:var(--acc)}
+.trio p{margin:6px 0;max-width:none;font-size:14.5px}
+.trio pre{font-size:12.5px;padding:10px 12px}
+.olc{border-left:3px solid var(--acc);background:var(--acc-soft);padding:10px 14px;border-radius:0 6px 6px 0;margin:16px 0;max-width:72ch;font-size:14.5px}
+.olc .t{font-weight:600;color:var(--acc-ink);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.uyari{border-left:3px solid var(--sig);background:var(--sig-soft);padding:10px 14px;border-radius:0 6px 6px 0;margin:16px 0;max-width:72ch;font-size:14.5px}
+.uyari .t{font-weight:600;color:var(--sig);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-size:14px;min-width:420px}
+th,td{text-align:left;padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.hi td{background:var(--acc-soft)}
+kbd{font:12px "IBM Plex Mono",monospace;background:var(--kbd);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.wire{font:13px/1.45 "IBM Plex Mono",monospace;background:var(--surf);border:1px dashed var(--line);border-radius:6px;padding:12px 16px;white-space:pre;overflow-x:auto;color:var(--ink);margin:12px 0}
+.chk{list-style:none;padding:0;max-width:68ch}
+.chk li{padding-left:28px;position:relative;margin:6px 0}
+.chk li::before{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border:2px solid var(--acc);border-radius:4px}
+footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;max-width:68ch}
+[data-dil]{display:none}
+html[lang="tr"] [data-dil="tr"],html[lang="en"] [data-dil="en"]{display:block}
+html[lang="tr"] nav[data-dil="tr"],html[lang="en"] nav[data-dil="en"]{display:block}
+@media(min-width:861px){html[lang="tr"] nav[data-dil="tr"],html[lang="en"] nav[data-dil="en"]{display:block}}
+@media (prefers-reduced-motion:no-preference){nav.toc a{transition:background .15s}}
+</style>
+
+<div class="wrap">
+<!-- ===================================================== TOC TR -->
+<nav class="toc" data-dil="tr" aria-label="Bölümler">
+  <div class="k">Temel</div>
+  <ol>
+    <li><a href="#b1">Proje iskeleti</a></li>
+    <li><a href="#b2">Pin: dijital giriş / çıkış</a></li>
+    <li><a href="#b3">Buton: yoklama mı, kesme mi</a></li>
+    <li><a href="#b4">Analog okuma (ADC)</a></li>
+    <li><a href="#b5">Zaman ve bekleme</a></li>
+    <li><a href="#b6">Güç: LED, röle, ULN2803, PWM</a></li>
+    <li><a href="#b7">Veri yolları: I2C, SPI, UART</a></li>
+  </ol>
+  <div class="k">CYD Studio</div>
+  <ol start="8">
+    <li><a href="#b8">Çoklu proje: N / T / S</a></li>
+    <li><a href="#b9">Projenin web sayfası</a></li>
+    <li><a href="#b10">Log ve hata ayıklama</a></li>
+    <li><a href="#b11">Bellek gerçeği</a></li>
+    <li><a href="#b12">Kart farkları ve pin haritası</a></li>
+    <li><a href="#b13">Şablon ve kontrol listesi</a></li>
+  </ol>
+  <div class="k">Modüller</div>
+  <ol start="14">
+    <li><a href="#b14">Yeni modül: datasheet'ten sürücüye</a></li>
+    <li><a href="#b15">Sık modüller: hızlı referans</a></li>
+    <li><a href="#b16">Kablodan panel (USB köprüsü)</a></li>
+  </ol>
+</nav>
+<!-- ===================================================== TOC EN -->
+<nav class="toc" data-dil="en" aria-label="Chapters">
+  <div class="k">Basics</div>
+  <ol>
+    <li><a href="#e1">Project skeleton</a></li>
+    <li><a href="#e2">Pins: digital in / out</a></li>
+    <li><a href="#e3">Buttons: polling or interrupt</a></li>
+    <li><a href="#e4">Analog reading (ADC)</a></li>
+    <li><a href="#e5">Time and waiting</a></li>
+    <li><a href="#e6">Power: LEDs, relays, ULN2803, PWM</a></li>
+    <li><a href="#e7">Buses: I2C, SPI, UART</a></li>
+  </ol>
+  <div class="k">CYD Studio</div>
+  <ol start="8">
+    <li><a href="#e8">Many projects: N / T / S</a></li>
+    <li><a href="#e9">A project's web page</a></li>
+    <li><a href="#e10">Logs and debugging</a></li>
+    <li><a href="#e11">The memory reality</a></li>
+    <li><a href="#e12">Board differences and pin map</a></li>
+    <li><a href="#e13">Template and checklist</a></li>
+  </ol>
+  <div class="k">Modules</div>
+  <ol start="14">
+    <li><a href="#e14">A new module: datasheet to driver</a></li>
+    <li><a href="#e15">Common modules: quick reference</a></li>
+    <li><a href="#e16">Panel over the cable (USB bridge)</a></li>
+  </ol>
+</nav>
+
+<!-- ############################################################ TR -->
+<main data-dil="tr">
+<header class="top">
+  <div>
+  <div class="eyebrow">CYD Studio · MicroPython · ESP32 / ESP8266</div>
+  <h1>Atölye Defteri</h1>
+  <p class="lead">Her bölüm üç parça: <b>Genel</b> — her mikrodenetleyicide böyle · <b>CYD Studio'da</b> — bizim projelerden gerçek kod · <b>Neden</b> — kartta ölçüp öyle karar verdiğimiz şey. Yeşil kutulardaki sayılar tahmin değil, ölçüm (Eylül 2026).</p>
+  </div>
+  <div class="dil" role="group" aria-label="Dil"><button data-set="tr" class="on">TR</button><button data-set="en">EN</button></div>
+</header>
+
+<h2 id="b1">1. Proje iskeleti</h2>
+<p>Bir mikrodenetleyici projesi her zaman aynı şekle sahiptir: <em>kur → döngüde iş yap → çıkarken temizle</em>. Arduino'da bunun adı <code>setup()</code>/<code>loop()</code>; MicroPython'da düz bir betiktir.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code>from machine import Pin
+import time
+
+led = Pin(2, Pin.OUT)      <span class="c"># kurulum</span>
+while True:                <span class="c"># sonsuz döngü</span>
+    led.value(1)
+    time.sleep(0.5)
+    led.value(0)
+    time.sleep(0.5)</code></pre>
+<p>Durdurmanın yolu yok: fişi çekersin.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/led_yakip_sondur.py</span>
+<pre><code>import cyd
+n = 0
+try:
+    while not cyd.should_stop():
+        n += 1
+        cyd.led(g=True)
+        if not cyd.sleep(0.5): break
+        cyd.led_off()
+        if not cyd.sleep(0.5): break
+finally:
+    cyd.led_off()   <span class="c"># çıkarken yanık kalmasın</span>
+print('durduruldu - %d kez' % n)</code></pre></div>
+<div class="n"><div class="t">Neden</div>
+<p><code>while True</code> yerine <code>while not cyd.should_stop()</code>: paneldeki <b>Durdur</b> düğmesi bir bayrak kaldırır; döngü her turda ona bakar ve temiz çıkar.</p>
+<p><code>cyd.sleep()</code> beklerken de bayrağı dinler ve kesilirse <code>False</code> döner — 30 saniyelik bir uykunun ortasında bile Durdur 3 sn içinde tutar.</p>
+<p><code>try/finally</code>: proje nasıl biterse bitsin donanım temiz kalır. Röle açık kalmış bir projeyi düşün.</p></div>
+</div>
+<div class="olc"><div class="t">Ölçüldü</div>Bayrağı dinlemeyen proje 3 sn sonra "takıldı" sayılır; tek çalışan oysa kart kendini resetler (~8 sn'de panel geri gelir). En kötü ihtimalde bile kart elinde kalmaz.</div>
+
+<h2 id="b2">2. Pin: dijital giriş / çıkış</h2>
+<p>GPIO pini tek bir teldir; ya <b>sürer</b> (çıkış: 0 V ya da 3,3 V) ya <b>dinler</b> (giriş: dışarıdaki voltajı 0/1 okur). Eşik kabaca 0,8 V altı = 0, 2 V üstü = 1; arası belirsiz.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code>p = Pin(22, Pin.OUT)
+p.value(1)          <span class="c"># 3,3 V</span>
+p.value(0)          <span class="c"># 0 V</span>
+
+g = Pin(27, Pin.IN, Pin.PULL_UP)
+g.value()           <span class="c"># 0 ya da 1</span></code></pre>
+<p>Havada kalan giriş pini anten gibidir, rastgele okur. <code>PULL_UP</code>/<code>PULL_DOWN</code> "boşta ne olsun" sorusunun cevabıdır.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/harici_led.py</span>
+<pre><code>from machine import Pin
+import cyd
+
+<span class="c"># CYD: GPIO22. NodeMCU: D1 (GPIO5).</span>
+PIN = getattr(cyd, 'D1', 22)
+led = Pin(PIN, Pin.OUT)
+led.value(0)
+
+while not cyd.should_stop():
+    led.value(1)
+    if not cyd.sleep(0.5): break
+    led.value(0)
+    if not cyd.sleep(0.5): break</code></pre>
+<p>Kart üstü RGB LED için pin bilmene gerek yok: <code>cyd.led(r,g,b)</code>.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p><code>getattr(cyd, 'D1', 22)</code>: NodeMCU'da 22 numaralı pin yok — <code>ValueError: invalid pin</code>. Aynı dosya iki kartta çalışsın diye kartın verdiği etiketi soruyoruz. (Bu hata gerçekten yaşandı: proje "1 saniye çalışıp düştü" gibi göründü.)</p>
+<p>CYD'de boş pin çok az: ekran, dokunmatik, SD ve LED çoğunu almış. Sana kalan <b>22, 27</b> ve sadece-giriş <b>35</b>. Pin haritası §12'de.</p></div>
+</div>
+<div class="uyari"><div class="t">Elektrik</div>Pin 3,3 V verir ve en fazla ~12 mA taşır. LED'e <b>220 Ω direnç şart</b>; motor, röle, lamba pinden sürülmez (§6). 5 V çıkışlı bir şeyi giriş pinine doğrudan bağlama. Her şeyin <b>GND'si ortak</b> olmalı — ortak toprak yoksa hiçbir sinyal anlamlı değil.</div>
+
+<h2 id="b3">3. Buton: yoklama mı, kesme mi</h2>
+<p>İki yol var. <b>Yoklama</b> (polling): döngüde pini okursun. <b>Kesme</b> (IRQ): donanım, pin değiştiği anda senin fonksiyonunu çağırır; sen döngüde sadece "kaç basış oldu" diye sorarsın.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code><span class="c"># yoklama</span>
+b = Pin(22, Pin.IN, Pin.PULL_UP)
+onceki = 1
+while True:
+    v = b.value()
+    if onceki == 1 and v == 0:
+        print('basildi')
+    onceki = v
+    time.sleep_ms(20)
+
+<span class="c"># kesme</span>
+def isr(pin): sayac[0] += 1
+b.irq(trigger=Pin.IRQ_FALLING, handler=isr)</code></pre>
+<p>Kablolama: buton bir ucu pine, diğeri GND'ye. Direnç yok, <code>PULL_UP</code> içeride; basılı = 0.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/buton_ornek.py</span>
+<pre><code>import cyd
+
+def basinca(b):
+    print('basis #%d' % b.sayac)   <span class="c"># kısa tut</span>
+
+b = cyd.buton(22, fn=basinca)      <span class="c"># pin ↔ GND</span>
+acik = False
+while not cyd.should_stop():
+    if b.basildi():                <span class="c"># son sorudan beri</span>
+        acik = not acik
+        cyd.led(False, acik, False)
+    cyd.sleep(0.05)</code></pre>
+<p><code>b.sayac</code> toplam, <code>b.basili()</code> şu an, <code>sekme_ms=40</code> titreşim süzme. Proje bitince kesme kendiliğinden kapanır.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p>Yoklama, döngün başka bir şeyle meşgulken basışı <b>kaçırır</b>. Kesme donanımdan sayar; sen 1 saniye sonra sorsan da basış orada durur.</p>
+<p>Kesme fonksiyonunun içinde <code>print</code>, bellek ayırma, uzun iş <b>yapılmaz</b>; <code>cyd.buton</code> senin <code>fn</code>'ini kesme dışına (<code>micropython.schedule</code>) taşıdığı için orada print serbest, ama yine kısa tut.</p>
+<p>Buton "sekme" yapar: bir basışta 5–10 titreşim. 40 ms içindeki tekrarlar sayılmaz.</p></div>
+</div>
+<div class="olc"><div class="t">Ölçüldü — 50 taklit basış, 60 ms</div>
+<div class="tbl"><table>
+<tr><th>Yanında ne koşuyor</th><th class="num">Kesme (cyd.buton)</th><th class="num">10 ms yoklama</th></tr>
+<tr><td>hiçbir şey</td><td class="num">50/50</td><td class="num">50/50</td></tr>
+<tr><td>2 küçük proje + ekrana çizen proje</td><td class="num">50/50</td><td class="num">34/50</td></tr>
+<tr class="hi"><td>+ CPU'yu bırakmayan bir thread</td><td class="num">50/50</td><td class="num">5/50</td></tr>
+</table></div>
+Tek proje çalışırken standart yoklama da 50/50 yakalar — sıradan yazılmış kod tek başına mağdur olmaz; komşu proje gelince fark açılır.</div>
+
+<h2 id="b4">4. Analog okuma (ADC)</h2>
+<p>Potansiyometre, LDR, NTC, pil seviyesi 0/1 değil, <b>sürekli voltaj</b> verir. ADC bunu sayıya çevirir. Her pin ADC yapamaz; giriş asla 3,3 V'u geçmemeli.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code>from machine import ADC, Pin
+a = ADC(Pin(35))
+a.atten(ADC.ATTN_11DB)   <span class="c"># ESP32: 0–3,3 V</span>
+ham = a.read()            <span class="c"># 0–4095</span>
+volt = ham / 4095 * 3.3
+
+<span class="c"># NodeMCU: ADC(0).read() → 0–1023</span></code></pre>
+<div class="wire">LDR gibi direnç sensörü tek başına okunmaz,
+gerilim bölücü kurulur:
+
+ 3,3V ──[ LDR ]──●──[ 10k ]── GND
+                 │
+               ADC pini</div></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/gece_lambasi.py (öz)</span>
+<pre><code>dusuk = yuksek = None
+yanik = False
+while not cyd.should_stop():
+    ham = cyd.light()           <span class="c"># CYD: GPIO34, NodeMCU: A0</span>
+    dusuk  = ham if dusuk  is None else min(dusuk, ham)
+    yuksek = ham if yuksek is None else max(yuksek, ham)
+    if n &lt;= 8 or yuksek - dusuk &lt; 20:
+        cyd.sleep(0.3); continue   <span class="c"># hâlâ öğreniyor</span>
+    oran = (ham - dusuk) / (yuksek - dusuk)
+    if not yanik and oran &lt; 0.5 - 0.12:
+        yanik = True;  cyd.led(True, True, True)
+    elif yanik and oran &gt; 0.5 + 0.12:
+        yanik = False; cyd.led_off()
+    cyd.sleep(0.3)</code></pre></div>
+<div class="n"><div class="t">Neden</div>
+<p><b>Sabit eşik yazma.</b> "ham &lt; 2000 ise karanlık" her odada, her kartta farklı sonuç verir (CYD 0–4095, NodeMCU 0–1023 döner). Proje ilk 8 ölçümde en düşük/en yüksek değeri öğrenip eşiği <em>oran</em> olarak kurar.</p>
+<p><b>Histerezis</b> (%12 ölü bant): eşiğin tam üstünde gezen değer LED'i titretir. Yanmak için 0,38'in altına, sönmek için 0,62'nin üstüne çıkması gerekir.</p>
+<p>Gürültülü analogda ayrıca 5–10 ölçümün ortalamasını almak yaygındır.</p></div>
+</div>
+<div class="olc"><div class="t">Ölçüldü</div>CYD'nin kart üstü LDR'si (GPIO34) çalışıyor ama aralığı dar: oda ışığında ~146/4095, elle kapatınca ~80. Bu yüzden proje ölçeği kendisi öğreniyor.</div>
+
+<h2 id="b5">5. Zaman ve bekleme</h2>
+<p>Üç ayrı ihtiyaç var: <b>beklemek</b>, <b>süre ölçmek</b>, <b>periyodik iş yapmak</b>. Hepsini <code>sleep</code> ile çözmeye çalışmak klasik hata.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code>import time
+time.sleep(1)          <span class="c"># beklemek (bloke)</span>
+time.sleep_ms(20)
+
+t0 = time.ticks_ms()   <span class="c"># süre ölçmek</span>
+...
+gecen = time.ticks_diff(time.ticks_ms(), t0)
+
+<span class="c"># periyodik: sleep ile DEĞİL, saatle</span>
+son = time.ticks_ms()
+while True:
+    if time.ticks_diff(time.ticks_ms(), son) &gt;= 1000:
+        son = time.ticks_ms()
+        olc()
+    kisa_isler()</code></pre>
+<p><code>ticks_ms()</code> taşar (sarar); farkı her zaman <code>ticks_diff</code> ile al, çıkarma yapma.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/hareket_led.py (ısınma bölümü)</span>
+<pre><code>ISINMA_SN = 45
+basla = time.ticks_ms()
+while not cyd.should_stop():
+    if time.ticks_diff(time.ticks_ms(), basla) &gt;= ISINMA_SN * 1000:
+        break                       <span class="c"># 45 sn doldu</span>
+    led(True)
+    if not cyd.sleep(0.12): break   <span class="c"># bu arada LED yanıp söner</span>
+    led(False)
+    if not cyd.sleep(0.12): break</code></pre>
+<p>PIR sensörü ilk 45 sn'de saçmalar; proje o süreyi <em>bekler ama kilitlenmez</em>: LED yanıp söner, Durdur çalışır.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p><code>time.sleep(45)</code> yazsaydık: 45 sn boyunca Durdur işlemez, panel o projeyi "takıldı" sanır. Uzun süreyi <b>kısa uykular + saat</b> ile geçiriyoruz.</p>
+<p>Bekleme süresi ne olmalı? Buton 20–50 ms, sensör 0,5–2 sn, ekran yenileme 100–500 ms. Daha sık okumak kazandırmaz, sadece komşu projelerden zaman çalar.</p>
+<p>Normal modda (§8) <code>cyd.sleep</code> aynı zamanda diğer projelere sıra verdiğin andır — hiç sleep'siz döngü komşuları bekletir.</p></div>
+</div>
+
+<h2 id="b6">6. Güç: LED, röle, ULN2803, PWM</h2>
+<p>Pin bir <em>sinyal</em>dir, güç kaynağı değil. Kural: pin sadece <b>tetikler</b>; yükü başka bir şey sürer.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<div class="wire">LED (≤ 12 mA):
+  pin ──[220Ω]──▶|── GND
+
+Röle / motor / 12 V lamba — ULN2803A:
+  pin  ──▶ ULN giriş (1B)
+  ULN COM ── +12 V          ← flyback diyotları için
+  ULN çıkış (1C) ── yükün (−) ucu
+  yükün (+) ucu ── +12 V
+  ULN GND ── kart GND ── adaptör (−)   ← ortak toprak</div>
+<pre><code><span class="c"># "analog çıkış" yok: PWM var</span>
+from machine import PWM
+pwm = PWM(Pin(22), freq=1000)
+pwm.duty(512)      <span class="c"># %50 parlaklık (ESP32 0–1023)</span></code></pre></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/uln2803_yuk.py (öz)</span>
+<pre><code>KANALLAR = (27,)
+pinler = [Pin(p, Pin.OUT, value=0) for p in KANALLAR]
+
+def hepsi(deger):
+    for p in pinler: p.value(deger)
+
+try:
+    while not cyd.should_stop():
+        hepsi(1); ekran(True, tur)
+        if not cyd.sleep(PERIYOT): break
+        hepsi(0); ekran(False, tur)
+        if not cyd.sleep(PERIYOT): break
+finally:
+    hepsi(0)          <span class="c"># 12 V yük açık kalmasın</span></code></pre>
+<p><code>value=0</code> ile kurmak: pin açıldığı an yük kapalı. Röleyi "bir an tık" diye açmamak için.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p>Dirençsiz LED 100 mA+ çeker; ESP32 pini 12 mA içindir — pin ya da çip gider.</p>
+<p>ULN2803 sekiz Darlington transistör + flyback diyot: motor/röle bobini kapanırken oluşan ters gerilimi yutar. Transistörü tek tek kurmaktansa tek çip.</p>
+<p>Kartın 3,3 V regülatörü küçük: sensörleri besler, motoru <b>beslemez</b>. Motorun kendi kaynağı olur, toprak ortaklanır.</p>
+<p>ESP8266'da PWM 0–1023, Pico'da <code>duty_u16</code> 0–65535 — sayı kartta değişir, fikir değişmez.</p></div>
+</div>
+
+<h2 id="b7">7. Veri yolları: I2C, SPI, UART</h2>
+<p>Sıcaklık sensörü, OLED, GPS gibi cihazlar 0/1 değil <b>byte</b> konuşur. Üç standart dil var; datasheet hangisini söylüyorsa o.</p>
+<div class="tbl"><table>
+<tr><th>Yol</th><th>Tel</th><th>Ne için</th><th>Nasıl bulunur</th></tr>
+<tr><td><b>I2C</b></td><td>SDA, SCL + GND</td><td>sensörlerin çoğu, OLED, PCF8574; bir hatta çok cihaz, her birinin <em>adresi</em> var</td><td><code>i2c.scan()</code> adresleri listeler</td></tr>
+<tr><td><b>SPI</b></td><td>SCK, MOSI, MISO, CS</td><td>hızlı: ekran, SD kart, radyo</td><td>CS pini cihazı seçer</td></tr>
+<tr><td><b>UART</b></td><td>TX↔RX çapraz + GND</td><td>GPS, GSM, başka bir kart</td><td><code>uart.read()</code> ham byte</td></tr>
+</table></div>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code>from machine import SoftI2C, Pin
+i2c = SoftI2C(scl=Pin(27), sda=Pin(22))
+print(i2c.scan())        <span class="c"># [118] → 0x76</span>
+
+<span class="c"># ham okuma: adres, kayıt, kaç byte</span>
+i2c.readfrom_mem(0x76, 0xD0, 1)
+
+<span class="c"># pratikte sürücü kullanılır</span>
+import bme280
+s = bme280.BME280(i2c)
+s.oku()</code></pre>
+<p><code>SoftI2C</code> herhangi iki pinde çalışır; hız gerekmiyorsa (sensörler için gerekmez) donanım I2C'ye ihtiyaç yok.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/ornek_bme280.py (öz)</span>
+<pre><code>SDA, SCL = 22, 27       <span class="c"># CYD'nin iki boş pini</span>
+
+def sensor_bagla():
+    while not cyd.should_stop():
+        try:
+            i2c = SoftI2C(sda=Pin(SDA), scl=Pin(SCL), freq=100000)
+            s = bme280.BME280(i2c)
+            print('sensor bagli: 0x%02X' % s.adres)
+            return s
+        except Exception as e:
+            print('sensor yok (%s) - 2 sn sonra tekrar' % e)
+            if not cyd.sleep(2): return None</code></pre>
+<p>Önce <code>i2c_tara.py</code>'yi çalıştır: hangi pin çiftinde hangi adres var, loga yazar.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p>Sensör bağlanmadan proje düşerse tek gördüğün bir traceback. "Bulana kadar dene, her 2 sn'de bir söyle" kalıbı hem kabloyu düzeltme fırsatı verir hem logu okunur tutar.</p>
+<p><code>bme280.py</code> projeler klasöründe duran sıradan bir modül: proje bitince <code>sys.modules</code>'ten silinir, düzenlersen bir sonraki çalıştırmada yeni sürüm koşar.</p>
+<p>UART örneği: <code>kopru_uart.py</code> CYD'yi USB'si bozuk bir kart için programlayıcıya çevirir — GPIO27 TX, GPIO22 RX.</p></div>
+</div>
+
+<h2 id="b8">8. Çoklu proje: Normal / Thread / Solo</h2>
+<p>Buraya kadar olan her şey tek proje içindi. CYD Studio'nun asıl işi birden fazla projeyi <b>yan yana</b> koşturmak; her satırdaki <b>N / T / S</b> cipi bunun seçimidir.</p>
+<div class="tbl"><table>
+<tr><th>Mod</th><th>Nasıl koşar</th><th class="num">Heap</th><th class="num">Dahili RAM</th><th>Ne için</th></tr>
+<tr class="hi"><td><b>N</b> Normal</td><td>tek ortak iş parçacığında asyncio görevi</td><td class="num">2–15 KB</td><td class="num">0</td><td>LED, sensör, küçük sayfa — çoğu şey</td></tr>
+<tr><td><b>T</b> Thread</td><td>kendi thread'i, GIL ile dilimli</td><td class="num">aynı</td><td class="num">10–15 KB</td><td>ekran çizen, sleep'siz döngü, ağır hesap</td></tr>
+<tr><td><b>S</b> Solo</td><td>panel kapalı, kart yeniden başlar, tek proje</td><td class="num">hepsi</td><td class="num">hepsi</td><td>BLE, HTTPS</td></tr>
+</table></div>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<p>Bir kartta iki işi aynı anda yapmanın iki klasik yolu: <b>thread</b> (işletim sistemi sırayla koşturur, her birinin kendi yığını) ve <b>işbirlikçi görev</b> (asyncio: her görev <code>await</code> dediğinde sırayı bırakır, tek yığın).</p>
+<pre><code>import asyncio
+async def led():
+    while True:
+        ...; await asyncio.sleep(0.5)
+async def sensor():
+    while True:
+        ...; await asyncio.sleep(2)
+asyncio.run(asyncio.gather(led(), sensor()))</code></pre></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<p>Sen düz yazarsın:</p>
+<pre><code>while not cyd.should_stop():
+    ...
+    cyd.sleep(0.5)</code></pre>
+<p>Normal modda sistem bunu satır satır <code>async def</code> içine sarar, <code>cyd.sleep(</code> → <code>await</code> yapar, geçici dosyaya yazıp oradan derler. Sen <code>async</code> görmezsin.</p>
+<p>Bekleme çağrısı bir <code>def</code> içindeyse dönüşüm uymaz → proje <b>kendiliğinden T'de açılır</b>, log nedenini yazar.</p>
+<p>İstersen kendin de yazabilirsin: dosyada <code>async def main():</code> varsa dokunulmaz.</p></div>
+<div class="n"><div class="t">Neden thread değil</div>
+<p>Thread'in yığını <b>dahili DRAM</b>'den çıkar: proje başına 10–15 KB. Panel açıkken 55 KB var → en fazla 3–4 proje. Normal modda görev başına dahili RAM <b>0</b>.</p>
+<p>Ölçüldü: 7 küçük proje yan yana, dahili RAM 37 KB'de sabit kaldı; sınır heap oldu. ESP8266'da (thread hiç yok) 3 proje.</p>
+<p>Bedeli: tek iş parçacığı olduğu için <b>sleep'siz proje komşularını bekletir</b>. O yüzden T var.</p></div>
+</div>
+<div class="olc"><div class="t">Ölçüldü — 10 ms'de tur atan proje, turlar arası en uzun boşluk</div>
+<div class="tbl"><table>
+<tr><th>Senaryo</th><th class="num">ortalama</th><th class="num">en uzun</th></tr>
+<tr><td>tek başına, N</td><td class="num">12,9 ms</td><td class="num">21 ms</td></tr>
+<tr><td>+ 4 normal proje (LED/LDR)</td><td class="num">15,9 ms</td><td class="num">352 ms</td></tr>
+<tr><td>+ ekrana çizen proje (N)</td><td class="num">25,5 ms</td><td class="num">973 ms</td></tr>
+<tr><td>+ CPU bırakmayan thread</td><td class="num">211 ms</td><td class="num">3,4 sn</td></tr>
+<tr class="hi"><td>aynı yük, proje <b>T</b>'de</td><td class="num">12,0 ms</td><td class="num">37 ms</td></tr>
+</table></div>
+Kural: <b>ekrana çizen ve ağır hesap yapan → T</b>; buton gibi girişler → <code>cyd.buton</code> (kesme, zamanlamadan bağımsız). Gerisi N.</div>
+
+<h2 id="b9">9. Projenin web sayfası</h2>
+<p>Bir projenin telefondan kontrol edilmesi istenir: "yükü aç/kapat", "sıcaklığı göster". Klasik yol projenin kendi HTTP sunucusunu açmasıdır. Bizde <b>yasak</b> — ve daha kolayı var.</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<pre><code>import socket
+s = socket.socket()
+s.bind(('0.0.0.0', 8080)); s.listen(1)
+while True:
+    c, a = s.accept()
+    istek = c.recv(512)
+    c.send(b'HTTP/1.1 200 OK\r\n\r\n&lt;h1&gt;selam&lt;/h1&gt;')
+    c.close()</code></pre>
+<p>Her projede aynı 15 satır, ikinci port, isteği elle ayrıştırma.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<span class="file">projects/yuk_kontrol.py (öz)</span>
+<pre><code>mod = 'kapali'
+
+def r_sayfa(istek):
+    return SAYFA            <span class="c"># str → html</span>
+
+def r_ayar(istek):
+    global mod
+    mod = istek['sorgu'].get('mod', mod)
+    return {'mod': mod}     <span class="c"># dict → json</span>
+
+cyd.rota('/yuk', r_sayfa)
+cyd.rota('/yuk/ayar', r_ayar)
+
+try:
+    while not cyd.should_stop():
+        yuk.value(1 if mod == 'acik' else 0)
+        cyd.sleep(0.02)
+finally:
+    cyd.rota_sil()</code></pre>
+<p>Sayfa <code>http://&lt;kart&gt;/yuk</code>'ta, panelde "Uygulamalar:" satırında link olarak görünür.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p>İkinci dinleyici soket lwIP tamponlarıyla dahili RAM'i yiyor: ölçüldü, panel kilitlendi. Tek soket, tek port, aynı sunucu.</p>
+<p>İşleyici <b>sunucunun</b> iş parçacığında koşar: içinde bekleme yapma, sadece değişken oku/yaz. Asıl işi (pin sürme) ana döngü yapar — sayfa ile proje bir değişken üzerinden konuşur (<code>mod</code>).</p>
+<p>Proje bitince rotalar silinir; başka bir projenin <code>/yuk</code>'u kalmaz.</p></div>
+</div>
+
+<h2 id="b10">10. Log ve hata ayıklama</h2>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<p>Mikrodenetleyicide ekran yok; hata ayıklamanın tek aracı seri porta <code>print</code>. Kart resetlenince her şey uçar; USB takılı değilse hiçbir şey görmezsin.</p>
+<pre><code>try:
+    ...
+except Exception as e:
+    print('hata:', e)     <span class="c"># seri porta</span></code></pre></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<p><code>print()</code> üç yere gider: panelin Konsol sekmesi (canlı), <code>/logs/&lt;proje&gt;.log</code> (kalıcı, 8 KB/proje, resetten sonra da durur), seri port.</p>
+<pre><code>if n % 10 == 0:                <span class="c"># her turda değil</span>
+    print('%d kez yanip sondu' % n)
+
+try:
+    ham = cyd.light()
+except OSError as e:
+    print('sensor okunamadi:', e)
+    break                      <span class="c"># düşme, açıkla, çık</span></code></pre>
+<p>Panelde projeyi seç → <b>Kayıtlı log</b>: Solo modda ya da reset sonrası bile ne olduğunu görürsün.</p></div>
+<div class="n"><div class="t">Neden</div>
+<p>Saniyede 12 satırdan fazla yazan proje kısılır (fazlası sayılır, "N satır atlandı" der): sıkı döngüde print paneli boğuyordu.</p>
+<p>Flash ömrü için satırlar toplu yazılır; reset öncesi tampon diske indirilir — "yanıt vermiyor, resetleniyor" satırının kaybolmaması için bunu bizzat düzelttik.</p>
+<p>Hatayı <em>yakalayıp açıklayıp çıkmak</em>, traceback'le düşmekten iyidir: log "sensör yok, 2 sn sonra tekrar" der, sen kabloya bakarsın.</p></div>
+</div>
+
+<h2 id="b11">11. Bellek gerçeği</h2>
+<p>PC'de bellek düşünmezsin; burada her KB'nin sahibi var. İki cep: <b>Python heap</b> (projenin verisi) ve <b>dahili DRAM</b> (WiFi, soketler, thread yığınları, BLE/TLS).</p>
+<div class="tbl"><table>
+<tr><th>CYD (ESP32)</th><th class="num">Stok MicroPython</th><th class="num">CYD Studio firmware'i</th></tr>
+<tr><td>Dahili RAM boş, panel açık</td><td class="num">27,8 KB</td><td class="num"><b>55 KB</b></td></tr>
+<tr><td>Python heap boş</td><td class="num">80 / 137 (otomatik büyür)</td><td class="num">75 / 94 (<b>sabit 96</b>)</td></tr>
+<tr><td>Aynı anda proje</td><td class="num">1</td><td class="num">7 normal + 2–3 thread</td></tr>
+<tr><td>NodeMCU heap boş</td><td class="num">2,5–4,8 KB</td><td class="num">24,7 KB</td></tr>
+</table></div>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<p>Yaygın kurallar: büyük string üretme (birleştirme kopya yapar), listeyi büyütmek yerine sabit <code>bytearray</code> kullan, ara ara <code>gc.collect()</code>, kaç KB kaldığına <code>gc.mem_free()</code> ile bak.</p>
+<pre><code>import gc
+gc.collect()
+print(gc.mem_free())</code></pre></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<p>Panelin sistem kutusu iki cebi ayrı gösterir; projede <code>cyd.dram()</code> dahili RAM'i verir. BLE/HTTPS 33–45 KB <em>bitişik</em> dahili RAM ister → o projeler <b>S</b> modunda.</p>
+<pre><code>SAYFA = """&lt;html&gt;...&lt;/html&gt;"""   <span class="c"># 3 KB string: tamam</span>
+veri = bytearray(20000)            <span class="c"># 20 KB: heap'ten, ölçüldü</span>
+foto = requests.get(url).content   <span class="c"># 200 KB: SIĞMAZ</span></code></pre>
+<p>Büyük veri parça parça: <code>ornek_sunucuya_yukle.py</code> 512 baytlık dilimlerle gönderir.</p></div>
+<div class="n"><div class="t">Neden firmware'i kendimiz derledik</div>
+<p>Stokta heap kendini ikiye katlayarak büyüyor ve dahili RAM'i yutuyordu (76 → 12 KB); çekirdek modüller RAM'e yükleniyordu. Çekirdeği flash'a dondurduk, heap'i sabitledik, WiFi tamponlarını küçülttük. Sen yine <code>.py</code> yazarsın; derleme bizim işimiz.</p>
+<p>Canlı log halkası 250 satırken 20,7 KB tutup heap'i parçalıyordu → 100 satır. Ekrana çizen proje 25–33 KB heap alır (durunca geri gelir).</p></div>
+</div>
+
+<h2 id="b12">12. Kart farkları ve pin haritası</h2>
+<p>Aynı proje iki kartta çalışsın diye kart farkları koda değil <b>veriye</b> konuldu: her kartın <code>cyd.py</code>'si bir <code>OZELLIKLER</code> sözlüğü bildirir, olmayan donanım <em>açık hata</em> fırlatır (sessizce yanlış çalışmasın).</p>
+<div class="trio">
+<div class="g"><div class="t">Genel</div>
+<p>Kartlar arasında değişen: pin numaraları, ADC aralığı (4095 / 1023), PWM aralığı, thread var mı, ekran var mı, kaç KB RAM. Değişmeyen: §1–§7'deki her fikir.</p></div>
+<div class="b"><div class="t">CYD Studio'da</div>
+<pre><code>PIN = getattr(cyd, 'D1', 22)       <span class="c"># pin etiketi</span>
+
+d = None
+try:
+    d = cyd.display()             <span class="c"># ekran yoksa hata</span>
+except Exception as e:
+    print('ekran yok:', e)
+
+BUYUK = d.height &gt;= 160           <span class="c"># 320×240 mı 128×64 mü</span>
+if BUYUK: OLCEK = 3
+else:     OLCEK = 1</code></pre></div>
+<div class="n"><div class="t">Neden</div>
+<p><code>ornek_bme280.py</code> CYD'de büyük yazı, OLED kartta tek satır çizer — aynı dosya. Ekran yoksa proje düşmez, sadece loga yazar. "Bu kartta yok" bilgisi <code>/api/caps</code> ile panele de gider; panel olmayan düğmeyi gizler.</p></div>
+</div>
+<h3>CYD (ESP32-2432S028R) — sana kalan pinler</h3>
+<div class="tbl"><table>
+<tr><th>Pin</th><th>Ne</th><th>Kullan</th></tr>
+<tr class="hi"><td>GPIO22</td><td>Extended IO konnektörü</td><td>giriş/çıkış — buton, LED, I2C SDA; <b>ana pinin</b></td></tr>
+<tr class="hi"><td>GPIO27</td><td>Sıcaklık/nem konnektörü</td><td>giriş/çıkış — ikinci pin, I2C SCL, ULN2803</td></tr>
+<tr class="hi"><td>GPIO35</td><td>Extended IO</td><td><b>sadece giriş</b>, ADC var, pull-up yok</td></tr>
+<tr><td>GPIO34</td><td>LDR (kart üstü)</td><td><code>cyd.light()</code></td></tr>
+<tr><td>GPIO4 / 16 / 17</td><td>RGB LED</td><td><code>cyd.led(r,g,b)</code> — ters mantık, sen düşünme</td></tr>
+<tr><td>GPIO26</td><td>hoparlör</td><td><code>cyd.beep(freq, ms)</code></td></tr>
+<tr><td>GPIO21</td><td>ekran arka ışığı</td><td>dokunma</td></tr>
+<tr><td>GPIO1 / 3</td><td>USB konsol</td><td>dokunma ("TX/RX" etiketli konnektör de bu)</td></tr>
+<tr><td>2, 12–15, 18, 19, 23, 25, 32, 33, 36, 39</td><td>ekran, dokunmatik, SD</td><td>dokunma</td></tr>
+</table></div>
+<h3>NodeMCU (ESP8266)</h3>
+<div class="tbl"><table>
+<tr><th>Etiket</th><th>GPIO</th><th>Kullan</th></tr>
+<tr class="hi"><td>D1, D2</td><td>5, 4</td><td>rahat giriş/çıkış; I2C için standart çift (SCL=D1, SDA=D2)</td></tr>
+<tr class="hi"><td>D5, D6, D7</td><td>14, 12, 13</td><td>rahat giriş/çıkış (SPI ile ortak)</td></tr>
+<tr><td>D4</td><td>2</td><td>dahili mavi LED, ters mantık — <code>cyd.led()</code></td></tr>
+<tr><td>D3, D8, D0</td><td>0, 15, 16</td><td>açılışta özel görev; kaçın</td></tr>
+<tr><td>A0</td><td>—</td><td>tek analog, 0–1023, en fazla 3,3 V (kart üstünde bölücü var)</td></tr>
+</table></div>
+<p>Kodda <code>cyd.D1</code> gibi yazarsın; sayıyı ezberlemene gerek yok.</p>
+
+<h2 id="b13">13. Şablon ve kontrol listesi</h2>
+<span class="file">yeni_proje.py</span>
+<pre><code><span class="c"># NE YAPAR: tek cümle
+# KABLOLAMA: pin ↔ ne</span>
+import cyd
+from machine import Pin
+
+PIN = getattr(cyd, 'D1', 22)
+ARALIK = 0.5
+
+<span class="c"># --- kurulum ---</span>
+cikis = Pin(PIN, Pin.OUT, value=0)
+d = None
+try:
+    d = cyd.display()
+except Exception:
+    pass
+
+print('basladi: GPIO%d, %.1f sn' % (PIN, ARALIK))
+
+<span class="c"># --- döngü ---</span>
+try:
+    while not cyd.should_stop():
+        ...                          <span class="c"># iş</span>
+        if not cyd.sleep(ARALIK):
+            break
+finally:
+    cikis.value(0)                   <span class="c"># temizlik: her koşulda</span>
+    print('bitti')</code></pre>
+<h3>Yeni bir sensörü bağlarken</h3>
+<ol>
+<li>Datasheet: besleme <b>3,3 mü 5 mi</b>, çıkış <b>dijital / analog / I2C / UART</b> → hangi pin türü.</li>
+<li>Bağla: VCC, GND, sinyal. I2C ise <code>i2c_tara.py</code> → adres görünmeli.</li>
+<li>Önce ham değeri döngüde <code>print</code> et — anla, sonra karar kodu yaz.</li>
+<li>Bekleme süresini sensörün hızına göre seç; eşiği sabit yazma, ölçüp oranla.</li>
+<li>Komşusu olacaksa: ekran çiziyor ya da ağır hesap → <b>T</b>; giriş yakalıyor → <code>cyd.buton</code>.</li>
+</ol>
+<h3>Çalıştırmadan önce</h3>
+<ul class="chk">
+<li><code>while not cyd.should_stop()</code> ve beklemeler <code>cyd.sleep</code></li>
+<li><code>try/finally</code> içinde çıkışlar kapatılıyor</li>
+<li>LED'de direnç, yükte ULN2803/transistör, GND ortak, girişe 5 V yok</li>
+<li>Pin bu kartta var mı (<code>getattr(cyd, 'D1', 22)</code>)</li>
+<li><code>print</code> her turda değil, olay olunca</li>
+<li>Web sayfası gerekiyorsa <code>cyd.rota</code>, ikinci soket değil</li>
+<li>BLE / HTTPS gerekiyorsa mod <b>S</b></li>
+</ul>
+
+<h2 id="b14">14. Yeni modül: datasheet'ten sürücüye</h2>
+<p>Elinde hiç görmediğin bir modül var; internetteki kütüphane kartına uymuyor ya da yok. Sürücü yazmak sanıldığından kısa: datasheet'ten <b>üç bilgi</b> alırsın, gerisi §7'deki I2C çağrılarıdır. Örnek: <b>PCF8574</b> I2C giriş/çıkış çoklayıcı (8 ek pin, LCD1602 "backpack"lerin altındaki çip).</p>
+<div class="trio">
+<div class="g"><div class="t">Datasheet'ten alınacak üç şey</div>
+<p><b>1. Adres:</b> PCF8574 <code>0x20–0x27</code> (A0–A2 pinleri), PCF8574<b>A</b> <code>0x38–0x3F</code>. <code>i2c.scan()</code> hangisi olduğunu söyler.</p>
+<p><b>2. Protokol:</b> kayıt yok. Bir byte <em>yazarsan</em> 8 çıkış o olur; bir byte <em>okursan</em> 8 pinin durumu gelir. Bit 0 = P0 … bit 7 = P7.</p>
+<p><b>3. Tuhaflık:</b> "yarı-çift yönlü" pinler. Giriş olarak kullanacağın pine önce <b>1 yaz</b> (zayıf pull-up), sonra oku. Çıkış olarak 0 yazınca güçlü çeker (LED'i GND'ye değil <b>VCC'ye</b> bağla, 0 = yanık), 1 yazınca sadece zayıf 100 µA verir. INT pini herhangi bir giriş değişince LOW'a düşer.</p></div>
+<div class="b"><div class="t">Sürücü: 20 satır</div>
+<span class="file">projects/pcf8574.py</span>
+<pre><code>class PCF8574:
+    def __init__(self, i2c, adres=0x20):
+        self.i2c = i2c
+        self.adres = adres
+        self.cikis = 0xFF          <span class="c"># hepsi 1: giriş/boşta</span>
+        self._yaz()
+
+    def _yaz(self):
+        self.i2c.writeto(self.adres, bytes([self.cikis]))
+
+    def pin_yaz(self, p, deger):   <span class="c"># p: 0–7</span>
+        if deger: self.cikis |= (1 &lt;&lt; p)
+        else:     self.cikis &amp;= ~(1 &lt;&lt; p) &amp; 0xFF
+        self._yaz()
+
+    def oku(self):                 <span class="c"># 8 pin, byte</span>
+        return self.i2c.readfrom(self.adres, 1)[0]
+
+    def pin_oku(self, p):
+        return (self.oku() &gt;&gt; p) &amp; 1</code></pre></div>
+<div class="n"><div class="t">Projede kullanımı ve neden</div>
+<span class="file">projects/pcf_ornek.py</span>
+<pre><code>import cyd
+from machine import SoftI2C, Pin
+from pcf8574 import PCF8574
+
+i2c = SoftI2C(scl=Pin(27), sda=Pin(22))
+print('i2c:', [hex(a) for a in i2c.scan()])
+x = PCF8574(i2c, 0x20)
+x.pin_yaz(0, 1)              <span class="c"># P0 giriş: buton P0↔GND</span>
+while not cyd.should_stop():
+    basili = x.pin_oku(0) == 0
+    x.pin_yaz(7, 0 if basili else 1)   <span class="c"># P7 LED (VCC'ye)</span>
+    cyd.sleep(0.05)</code></pre>
+<p>Sınıfı ayrı dosyaya koymak: proje bitince modül boşaltılır, düzeltirsen yeni sürüm koşar. Yoklama 50 ms: I2C üzerinden kesme yok (INT pinini kartın bir pinine bağlayıp <code>cyd.buton(pin)</code> ile yakalarsan var). PCF8574 <b>hız</b> için değil, <b>pin sayısı</b> için: CYD'nin 2 boş pinine 8 ekler.</p></div>
+</div>
+<div class="uyari"><div class="t">Sürücü yazarken genel sıra</div>1) <code>scan()</code> ile adresi gör. 2) Datasheet'in "register map" tablosundan <em>kimlik kaydını</em> oku (varsa, ör. BME280 0xD0 → 0x60): doğru çipe ulaştığını kanıtlar. 3) Tek bir ölçümü ham byte olarak yazdır. 4) Datasheet'teki dönüşüm formülünü uygula. 5) Sınıfa sar, <code>oku()</code> ver. Her adımda <code>print</code> — bir adım çalışmadan sonrakine geçme.</div>
+
+<h2 id="b15">15. Sık modüller: hızlı referans</h2>
+<p>Her satır: bağlantı, kütüphane (firmware'de gömülü olanlar işaretli), 5 satırlık çekirdek kod, tuzak. Hepsi §13 şablonunun içine, döngüye girer.</p>
+<div class="tbl"><table>
+<tr><th>Modül</th><th>Bağlantı</th><th>Çekirdek kod</th><th>Tuzak</th></tr>
+<tr><td><b>DS18B20</b> sıcaklık (1-Wire)</td><td>VCC 3,3 · GND · DATA→pin, DATA–VCC arası <b>4,7 kΩ</b></td><td><pre><code>import onewire, ds18x20   <span class="c"># gömülü</span>
+ow = ds18x20.DS18X20(onewire.OneWire(Pin(22)))
+roms = ow.scan()
+ow.convert_temp(); cyd.sleep(0.75)
+print(ow.read_temp(roms[0]))</code></pre></td><td>convert → 750 ms bekle → oku; aynı hatta çok sensör olur, her birinin ROM kimliği var</td></tr>
+<tr><td><b>DHT11 / DHT22</b> nem+sıcaklık</td><td>VCC · GND · DATA→pin (modülde pull-up var)</td><td><pre><code>import dht                <span class="c"># gömülü</span>
+s = dht.DHT22(Pin(22))
+s.measure()
+print(s.temperature(), s.humidity())</code></pre></td><td>en sık 2 sn'de bir oku; ilk ölçüm hata verebilir, <code>try</code> ile geç</td></tr>
+<tr><td><b>HC-SR04</b> mesafe</td><td>VCC <b>5 V</b> · GND · TRIG→pin · ECHO→pin <b>bölücüyle</b> (5 V çıkış!)</td><td><pre><code>from machine import time_pulse_us
+trig = Pin(22, Pin.OUT); echo = Pin(35, Pin.IN)
+trig.value(1); time.sleep_us(10); trig.value(0)
+us = time_pulse_us(echo, 1, 30000)
+cm = us / 58</code></pre></td><td>ECHO 5 V'tur: 1 kΩ + 2 kΩ bölücü; −1/−2 dönerse zaman aşımı</td></tr>
+<tr><td><b>Servo</b> SG90</td><td>kırmızı 5 V · kahve GND · turuncu→pin</td><td><pre><code>pwm = PWM(Pin(22), freq=50)
+def aci(a):              <span class="c"># 0–180</span>
+    pwm.duty(int(26 + a / 180 * 102))   <span class="c"># ESP32 0–1023</span></code></pre></td><td>servoyu kartın 3,3 V'undan besleme; 50 Hz şart; darbe 0,5–2,5 ms</td></tr>
+<tr><td><b>Röle modülü</b></td><td>VCC 5 V · GND · IN→pin</td><td><pre><code>r = Pin(22, Pin.OUT, value=1)   <span class="c"># çoğu modül LOW=çeker</span>
+r.value(0)   <span class="c"># aç</span>
+r.value(1)   <span class="c"># kapat</span></code></pre></td><td>çoğu modül <b>ters mantık</b>; 230 V tarafı: sadece bilen dokunur</td></tr>
+<tr><td><b>Döner enkoder</b></td><td>CLK→pin · DT→pin · SW→pin · GND (pull-up'lar içeride)</td><td><pre><code>clk = Pin(22, Pin.IN, Pin.PULL_UP); dt = Pin(27, Pin.IN, Pin.PULL_UP)
+sayac = [0]
+def don(p): sayac[0] += -1 if dt.value() else 1
+clk.irq(trigger=Pin.IRQ_FALLING, handler=don)</code></pre></td><td>yoklama adım kaçırır → <b>kesme</b>; sekmeye karşı 2 ms'den sık sayma</td></tr>
+<tr><td><b>NeoPixel</b> WS2812</td><td>5 V · GND · DIN→pin (330 Ω seri)</td><td><pre><code>import neopixel          <span class="c"># gömülü</span>
+np = neopixel.NeoPixel(Pin(22), 8)
+np[0] = (255, 0, 0); np.write()</code></pre></td><td>çok LED çok akım (60 mA/LED beyazda): ayrı 5 V; veri 3,3 V genelde yeter</td></tr>
+<tr><td><b>LCD1602 I2C</b> (PCF8574 backpack)</td><td>VCC 5 V · GND · SDA · SCL</td><td><pre><code>i2c.scan()   <span class="c"># 0x27 ya da 0x3F</span>
+<span class="c"># lcd_api.py + i2c_lcd.py (projects/)</span>
+lcd = I2cLcd(i2c, 0x27, 2, 16)
+lcd.putstr('CYD Studio')</code></pre></td><td>arka kontrast potu; 5 V modül SDA/SCL'de 5 V'a çekebilir — çoğu kart tolere eder, emin değilsen 3,3 V modül al</td></tr>
+<tr><td><b>Potansiyometre</b></td><td>uçlar 3,3 V ve GND · orta→ADC</td><td><pre><code>a = ADC(Pin(35)); a.atten(ADC.ATTN_11DB)
+yuzde = a.read() * 100 // 4095</code></pre></td><td>5 V'a bağlama; uçlarda titreme için 5 ölçüm ortalaması</td></tr>
+<tr><td><b>MQTT</b> (sunucuya veri)</td><td>WiFi</td><td><pre><code>from umqtt.simple import MQTTClient   <span class="c"># gömülü</span>
+c = MQTTClient('cyd', '192.168.0.33'); c.connect()
+c.publish(b'ev/sicaklik', b'23.5')</code></pre></td><td>normal modda düz MQTT olur, TLS'li (8883) için <b>S</b> modu</td></tr>
+</table></div>
+
+<h2 id="b16">16. Kablodan panel (USB köprüsü)</h2>
+<p>WiFi yoksa ya da PC internetten kopmasın istiyorsan panel kablodan gelir: kartta <code>usbkopru.py</code>, PC'de <code>tools/usb_panel.py</code>.</p>
+<pre><code>python tools\usb_panel.py COM4 --board nodemcu     <span class="c"># CYD için: COM3 --board cyd</span>
+<span class="c"># tarayıcı: http://127.0.0.1:8080/   (localhost DEĞİL - Windows IPv6'yı önce dener, 2 sn gecikir)</span></code></pre>
+<div class="trio">
+<div class="g"><div class="t">Nasıl çalışıyor</div>
+<p>Panel sayfası PC'deki dosyadan anında yüklenir; sadece <code>/api/…</code> istekleri seri porttan gider. İstek tek satırlık base64 çerçeve; kart aynı sunucu kodunu (<code>server._route</code>) sahte bir bağlantıyla çalıştırıp cevabı geri akıtır. Kartın konsol çıktısı da aynı pencerede akar.</p></div>
+<div class="b"><div class="t">Ölçüldü (ESP8266)</div>
+<p>durum 0,6–1 sn · kaydet/çalıştır/log/durdur 0,2–0,9 sn · 11 KB doküman 1,5 sn. 384 bayttan büyük gövdeler 192 baytlık <b>onaylı</b> parçalarla gider: onaysız akışta kartın seri tamponu taşıp parça bozuluyordu (<code>incorrect padding</code>).</p></div>
+<div class="n"><div class="t">Sınırlar</div>
+<p>Köprü açıkken COM portu meşguldür: <code>deploy</code> için köprüyü <kbd>Ctrl+C</kbd> ile kapat. Aynı anda tek sekme. WiFi'li panel yanında çalışmaya devam eder.</p></div>
+</div>
+
+<footer>Kaynaklar: kart üstü belge <code>device/docs.md</code> (ölçümler), kartın Doküman düğmesi (Shift+tık: karttaki kısa belge), <code>/projects</code> altındaki örnekler. Sayılar CYD ve NodeMCU üzerinde Eylül 2026'da ölçüldü; kart ya da firmware değişirse yeniden ölçülmeli.</footer>
+</main>
+
+<!-- ############################################################ EN -->
+<main data-dil="en">
+<header class="top">
+  <div>
+  <div class="eyebrow">CYD Studio · MicroPython · ESP32 / ESP8266</div>
+  <h1>Workshop Notebook</h1>
+  <p class="lead">Every chapter has three parts: <b>General</b> — how it works on any microcontroller · <b>In CYD Studio</b> — real code from our projects · <b>Why</b> — what we measured on the board and decided from it. Numbers in green boxes are measurements, not estimates (September 2026).</p>
+  </div>
+  <div class="dil" role="group" aria-label="Language"><button data-set="tr">TR</button><button data-set="en" class="on">EN</button></div>
+</header>
+
+<h2 id="e1">1. Project skeleton</h2>
+<p>A microcontroller project always has the same shape: <em>set up → do work in a loop → clean up on exit</em>. Arduino calls it <code>setup()</code>/<code>loop()</code>; in MicroPython it is a plain script.</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code>from machine import Pin
+import time
+
+led = Pin(2, Pin.OUT)      <span class="c"># setup</span>
+while True:                <span class="c"># forever</span>
+    led.value(1)
+    time.sleep(0.5)
+    led.value(0)
+    time.sleep(0.5)</code></pre>
+<p>No way to stop it: you pull the plug.</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/led_yakip_sondur.py</span>
+<pre><code>import cyd
+n = 0
+try:
+    while not cyd.should_stop():
+        n += 1
+        cyd.led(g=True)
+        if not cyd.sleep(0.5): break
+        cyd.led_off()
+        if not cyd.sleep(0.5): break
+finally:
+    cyd.led_off()   <span class="c"># never leave it lit</span>
+print('stopped - %d blinks' % n)</code></pre></div>
+<div class="n"><div class="t">Why</div>
+<p><code>while not cyd.should_stop()</code> instead of <code>while True</code>: the panel's <b>Stop</b> button raises a flag; the loop checks it every turn and exits cleanly.</p>
+<p><code>cyd.sleep()</code> watches the flag while waiting and returns <code>False</code> when interrupted — Stop lands within 3 s even in the middle of a 30-second sleep.</p>
+<p><code>try/finally</code>: however the project ends, the hardware is left clean. Think of a relay left switched on.</p></div>
+</div>
+<div class="olc"><div class="t">Measured</div>A project that ignores the flag is marked "stuck" after 3 s; if it is the only one running the board resets itself (panel back in ~8 s). Even in the worst case the board is never lost.</div>
+
+<h2 id="e2">2. Pins: digital in / out</h2>
+<p>A GPIO pin is one wire; it either <b>drives</b> (output: 0 V or 3.3 V) or <b>listens</b> (input: reads the outside voltage as 0/1). Threshold roughly: below 0.8 V = 0, above 2 V = 1; in between is undefined.</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code>p = Pin(22, Pin.OUT)
+p.value(1)          <span class="c"># 3.3 V</span>
+p.value(0)          <span class="c"># 0 V</span>
+
+g = Pin(27, Pin.IN, Pin.PULL_UP)
+g.value()           <span class="c"># 0 or 1</span></code></pre>
+<p>A floating input is an antenna and reads noise. <code>PULL_UP</code>/<code>PULL_DOWN</code> answers "what is it when nothing is connected".</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/harici_led.py</span>
+<pre><code>from machine import Pin
+import cyd
+
+<span class="c"># CYD: GPIO22. NodeMCU: D1 (GPIO5).</span>
+PIN = getattr(cyd, 'D1', 22)
+led = Pin(PIN, Pin.OUT)
+led.value(0)
+
+while not cyd.should_stop():
+    led.value(1)
+    if not cyd.sleep(0.5): break
+    led.value(0)
+    if not cyd.sleep(0.5): break</code></pre>
+<p>For the on-board RGB LED you need no pin number: <code>cyd.led(r,g,b)</code>.</p></div>
+<div class="n"><div class="t">Why</div>
+<p><code>getattr(cyd, 'D1', 22)</code>: the NodeMCU has no pin 22 — <code>ValueError: invalid pin</code>. We ask the board for its label so the same file runs on both. (This really happened: the project looked like it "ran one second and died".)</p>
+<p>The CYD has very few free pins: display, touch, SD and LED take most. Yours are <b>22, 27</b> and input-only <b>35</b>. Pin map in §12.</p></div>
+</div>
+<div class="uyari"><div class="t">Electrical</div>A pin gives 3.3 V and carries at most ~12 mA. An LED <b>needs a 220 Ω resistor</b>; motors, relays, lamps are never driven from a pin (§6). Never wire a 5 V output straight into an input pin. Everything shares <b>one GND</b> — without a common ground no signal means anything.</div>
+
+<h2 id="e3">3. Buttons: polling or interrupt</h2>
+<p>Two ways. <b>Polling</b>: read the pin in the loop. <b>Interrupt</b> (IRQ): the hardware calls your function the moment the pin changes; in the loop you only ask "how many presses so far".</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code><span class="c"># polling</span>
+b = Pin(22, Pin.IN, Pin.PULL_UP)
+prev = 1
+while True:
+    v = b.value()
+    if prev == 1 and v == 0:
+        print('pressed')
+    prev = v
+    time.sleep_ms(20)
+
+<span class="c"># interrupt</span>
+def isr(pin): count[0] += 1
+b.irq(trigger=Pin.IRQ_FALLING, handler=isr)</code></pre>
+<p>Wiring: one leg to the pin, the other to GND. No resistor, <code>PULL_UP</code> is internal; pressed = 0.</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/buton_ornek.py</span>
+<pre><code>import cyd
+
+def on_press(b):
+    print('press #%d' % b.sayac)   <span class="c"># keep it short</span>
+
+b = cyd.buton(22, fn=on_press)     <span class="c"># pin ↔ GND</span>
+on = False
+while not cyd.should_stop():
+    if b.basildi():                <span class="c"># presses since last ask</span>
+        on = not on
+        cyd.led(False, on, False)
+    cyd.sleep(0.05)</code></pre>
+<p><code>b.sayac</code> total, <code>b.basili()</code> held right now, <code>sekme_ms=40</code> debounce. The IRQ is released when the project ends.</p></div>
+<div class="n"><div class="t">Why</div>
+<p>Polling <b>misses</b> a press while your loop is busy elsewhere. The interrupt counts in hardware; ask a second later and the press is still there.</p>
+<p>Inside an IRQ handler: no <code>print</code>, no allocation, nothing long. <code>cyd.buton</code> moves your <code>fn</code> out of the IRQ (<code>micropython.schedule</code>), so print is allowed there — still keep it short.</p>
+<p>Buttons bounce: one press is 5–10 edges. Repeats within 40 ms are not counted.</p></div>
+</div>
+<div class="olc"><div class="t">Measured — 50 simulated presses, 60 ms each</div>
+<div class="tbl"><table>
+<tr><th>Running next to it</th><th class="num">IRQ (cyd.buton)</th><th class="num">10 ms polling</th></tr>
+<tr><td>nothing</td><td class="num">50/50</td><td class="num">50/50</td></tr>
+<tr><td>2 small projects + a display-drawing project</td><td class="num">50/50</td><td class="num">34/50</td></tr>
+<tr class="hi"><td>+ a thread that never yields the CPU</td><td class="num">50/50</td><td class="num">5/50</td></tr>
+</table></div>
+With a single project plain polling also scores 50/50 — ordinary code is fine alone; the gap opens when neighbours arrive.</div>
+
+<h2 id="e4">4. Analog reading (ADC)</h2>
+<p>Potentiometers, LDRs, NTCs, battery level give a <b>continuous voltage</b>, not 0/1. The ADC turns it into a number. Not every pin has an ADC; the input must never exceed 3.3 V.</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code>from machine import ADC, Pin
+a = ADC(Pin(35))
+a.atten(ADC.ATTN_11DB)   <span class="c"># ESP32: 0–3.3 V</span>
+raw = a.read()            <span class="c"># 0–4095</span>
+volt = raw / 4095 * 3.3
+
+<span class="c"># NodeMCU: ADC(0).read() → 0–1023</span></code></pre>
+<div class="wire">A resistive sensor (LDR) is not read on its own;
+build a voltage divider:
+
+ 3.3V ──[ LDR ]──●──[ 10k ]── GND
+                 │
+               ADC pin</div></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/gece_lambasi.py (core)</span>
+<pre><code>low = high = None
+lit = False
+while not cyd.should_stop():
+    raw = cyd.light()           <span class="c"># CYD: GPIO34, NodeMCU: A0</span>
+    low  = raw if low  is None else min(low, raw)
+    high = raw if high is None else max(high, raw)
+    if n &lt;= 8 or high - low &lt; 20:
+        cyd.sleep(0.3); continue   <span class="c"># still learning</span>
+    ratio = (raw - low) / (high - low)
+    if not lit and ratio &lt; 0.5 - 0.12:
+        lit = True;  cyd.led(True, True, True)
+    elif lit and ratio &gt; 0.5 + 0.12:
+        lit = False; cyd.led_off()
+    cyd.sleep(0.3)</code></pre></div>
+<div class="n"><div class="t">Why</div>
+<p><b>Never hard-code a threshold.</b> "raw &lt; 2000 means dark" differs per room and per board (CYD returns 0–4095, NodeMCU 0–1023). The project learns min/max over the first 8 readings and sets the threshold as a <em>ratio</em>.</p>
+<p><b>Hysteresis</b> (12% dead band): a value hovering at the threshold would flicker the LED. It must drop below 0.38 to switch on and rise above 0.62 to switch off.</p>
+<p>For noisy analog inputs averaging 5–10 samples is common too.</p></div>
+</div>
+<div class="olc"><div class="t">Measured</div>The CYD's on-board LDR (GPIO34) works but its range is narrow: ~146/4095 in room light, ~80 when covered. That is why the project learns its own scale.</div>
+
+<h2 id="e5">5. Time and waiting</h2>
+<p>Three separate needs: <b>waiting</b>, <b>measuring a duration</b>, <b>doing something periodically</b>. Solving all three with <code>sleep</code> is the classic mistake.</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code>import time
+time.sleep(1)          <span class="c"># wait (blocking)</span>
+time.sleep_ms(20)
+
+t0 = time.ticks_ms()   <span class="c"># measure</span>
+...
+elapsed = time.ticks_diff(time.ticks_ms(), t0)
+
+<span class="c"># periodic: by the clock, NOT by sleep</span>
+last = time.ticks_ms()
+while True:
+    if time.ticks_diff(time.ticks_ms(), last) &gt;= 1000:
+        last = time.ticks_ms()
+        measure()
+    short_work()</code></pre>
+<p><code>ticks_ms()</code> wraps around; always use <code>ticks_diff</code>, never plain subtraction.</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/hareket_led.py (warm-up part)</span>
+<pre><code>WARMUP_S = 45
+start = time.ticks_ms()
+while not cyd.should_stop():
+    if time.ticks_diff(time.ticks_ms(), start) &gt;= WARMUP_S * 1000:
+        break                       <span class="c"># 45 s over</span>
+    led(True)
+    if not cyd.sleep(0.12): break   <span class="c"># blink meanwhile</span>
+    led(False)
+    if not cyd.sleep(0.12): break</code></pre>
+<p>A PIR sensor is erratic for its first 45 s; the project <em>waits without locking up</em>: the LED blinks, Stop works.</p></div>
+<div class="n"><div class="t">Why</div>
+<p>With <code>time.sleep(45)</code> Stop would be ignored for 45 s and the panel would call the project stuck. Long waits are done as <b>short sleeps + the clock</b>.</p>
+<p>How long to sleep? Buttons 20–50 ms, sensors 0.5–2 s, screen refresh 100–500 ms. Reading more often gains nothing; it only steals time from neighbour projects.</p>
+<p>In normal mode (§8) <code>cyd.sleep</code> is also the moment you hand the turn to other projects — a loop with no sleep stalls its neighbours.</p></div>
+</div>
+
+<h2 id="e6">6. Power: LEDs, relays, ULN2803, PWM</h2>
+<p>A pin is a <em>signal</em>, not a power supply. Rule: the pin only <b>triggers</b>; something else drives the load.</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<div class="wire">LED (≤ 12 mA):
+  pin ──[220Ω]──▶|── GND
+
+Relay / motor / 12 V lamp — ULN2803A:
+  pin  ──▶ ULN input (1B)
+  ULN COM ── +12 V          ← for the flyback diodes
+  ULN output (1C) ── load (−)
+  load (+) ── +12 V
+  ULN GND ── board GND ── adapter (−)   ← common ground</div>
+<pre><code><span class="c"># there is no "analog out": PWM instead</span>
+from machine import PWM
+pwm = PWM(Pin(22), freq=1000)
+pwm.duty(512)      <span class="c"># 50% brightness (ESP32 0–1023)</span></code></pre></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/uln2803_yuk.py (core)</span>
+<pre><code>CHANNELS = (27,)
+pins = [Pin(p, Pin.OUT, value=0) for p in CHANNELS]
+
+def all_(v):
+    for p in pins: p.value(v)
+
+try:
+    while not cyd.should_stop():
+        all_(1); screen(True, turn)
+        if not cyd.sleep(PERIOD): break
+        all_(0); screen(False, turn)
+        if not cyd.sleep(PERIOD): break
+finally:
+    all_(0)          <span class="c"># never leave the 12 V load on</span></code></pre>
+<p>Creating with <code>value=0</code>: the load is off the instant the pin exists — no relay "click" at start.</p></div>
+<div class="n"><div class="t">Why</div>
+<p>An LED without a resistor draws 100 mA+; an ESP32 pin is rated for 12 mA — the pin or the chip dies.</p>
+<p>The ULN2803 is eight Darlington transistors plus flyback diodes: it absorbs the reverse spike a motor/relay coil produces when switched off. One chip instead of building transistor stages.</p>
+<p>The board's 3.3 V regulator is small: it feeds sensors, <b>not motors</b>. The motor gets its own supply; grounds are joined.</p>
+<p>ESP8266 PWM is 0–1023, the Pico uses <code>duty_u16</code> 0–65535 — the number changes per board, the idea does not.</p></div>
+</div>
+
+<h2 id="e7">7. Buses: I2C, SPI, UART</h2>
+<p>Temperature sensors, OLEDs, GPS modules speak <b>bytes</b>, not 0/1. Three standard languages; the datasheet tells you which.</p>
+<div class="tbl"><table>
+<tr><th>Bus</th><th>Wires</th><th>For</th><th>How to find</th></tr>
+<tr><td><b>I2C</b></td><td>SDA, SCL + GND</td><td>most sensors, OLED, PCF8574; many devices on one bus, each with an <em>address</em></td><td><code>i2c.scan()</code> lists addresses</td></tr>
+<tr><td><b>SPI</b></td><td>SCK, MOSI, MISO, CS</td><td>fast: display, SD card, radio</td><td>CS pin selects the device</td></tr>
+<tr><td><b>UART</b></td><td>TX↔RX crossed + GND</td><td>GPS, GSM, another board</td><td><code>uart.read()</code> raw bytes</td></tr>
+</table></div>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code>from machine import SoftI2C, Pin
+i2c = SoftI2C(scl=Pin(27), sda=Pin(22))
+print(i2c.scan())        <span class="c"># [118] → 0x76</span>
+
+<span class="c"># raw read: address, register, count</span>
+i2c.readfrom_mem(0x76, 0xD0, 1)
+
+<span class="c"># in practice you use a driver</span>
+import bme280
+s = bme280.BME280(i2c)
+s.oku()</code></pre>
+<p><code>SoftI2C</code> works on any two pins; unless you need speed (sensors don't) hardware I2C is unnecessary.</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/ornek_bme280.py (core)</span>
+<pre><code>SDA, SCL = 22, 27       <span class="c"># the CYD's two free pins</span>
+
+def connect():
+    while not cyd.should_stop():
+        try:
+            i2c = SoftI2C(sda=Pin(SDA), scl=Pin(SCL), freq=100000)
+            s = bme280.BME280(i2c)
+            print('sensor at 0x%02X' % s.adres)
+            return s
+        except Exception as e:
+            print('no sensor (%s) - retry in 2 s' % e)
+            if not cyd.sleep(2): return None</code></pre>
+<p>Run <code>i2c_tara.py</code> first: it logs which address answers on which pin pair.</p></div>
+<div class="n"><div class="t">Why</div>
+<p>If the project crashes when the sensor is unplugged, all you see is a traceback. "Retry until found, say so every 2 s" lets you fix the wire and keeps the log readable.</p>
+<p><code>bme280.py</code> is an ordinary module in the projects folder: it is unloaded from <code>sys.modules</code> when the project ends, so an edit runs on the next start.</p>
+<p>UART example: <code>kopru_uart.py</code> turns the CYD into a programmer for a board with a broken USB port — GPIO27 TX, GPIO22 RX.</p></div>
+</div>
+
+<h2 id="e8">8. Many projects: Normal / Thread / Solo</h2>
+<p>Everything so far was one project. CYD Studio's real job is running several <b>side by side</b>; the <b>N / T / S</b> chip on each row is that choice.</p>
+<div class="tbl"><table>
+<tr><th>Mode</th><th>How it runs</th><th class="num">Heap</th><th class="num">Internal RAM</th><th>For</th></tr>
+<tr class="hi"><td><b>N</b> Normal</td><td>asyncio task on one shared thread</td><td class="num">2–15 KB</td><td class="num">0</td><td>LEDs, sensors, small pages — most things</td></tr>
+<tr><td><b>T</b> Thread</td><td>own thread, sliced by the GIL</td><td class="num">same</td><td class="num">10–15 KB</td><td>display drawing, loops without sleep, heavy compute</td></tr>
+<tr><td><b>S</b> Solo</td><td>panel off, board reboots, single project</td><td class="num">all</td><td class="num">all</td><td>BLE, HTTPS</td></tr>
+</table></div>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<p>Two classic ways to do two things at once on one board: <b>threads</b> (the OS alternates them, each with its own stack) and <b>cooperative tasks</b> (asyncio: each task yields at <code>await</code>, one stack).</p>
+<pre><code>import asyncio
+async def led():
+    while True:
+        ...; await asyncio.sleep(0.5)
+async def sensor():
+    while True:
+        ...; await asyncio.sleep(2)
+asyncio.run(asyncio.gather(led(), sensor()))</code></pre></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<p>You write it plainly:</p>
+<pre><code>while not cyd.should_stop():
+    ...
+    cyd.sleep(0.5)</code></pre>
+<p>In normal mode the system wraps it line by line into an <code>async def</code>, turns <code>cyd.sleep(</code> into <code>await</code>, writes a temp file and compiles from it. You never see <code>async</code>.</p>
+<p>If a sleep call sits inside a <code>def</code> the transform does not apply → the project <b>opens as T by itself</b> and the log says why.</p>
+<p>You may also write it yourself: a file containing <code>async def main():</code> is left untouched.</p></div>
+<div class="n"><div class="t">Why not threads</div>
+<p>A thread's stack comes out of <b>internal DRAM</b>: 10–15 KB per project. With the panel up there is 55 KB → 3–4 projects at most. In normal mode a task costs <b>0</b> internal RAM.</p>
+<p>Measured: 7 small projects side by side, internal RAM flat at 37 KB; the heap became the limit. On the ESP8266 (no threads at all) 3 projects.</p>
+<p>The price: one thread, so a <b>project without sleep stalls its neighbours</b>. That is what T is for.</p></div>
+</div>
+<div class="olc"><div class="t">Measured — a project looping every 10 ms, longest gap between turns</div>
+<div class="tbl"><table>
+<tr><th>Scenario</th><th class="num">average</th><th class="num">longest</th></tr>
+<tr><td>alone, N</td><td class="num">12.9 ms</td><td class="num">21 ms</td></tr>
+<tr><td>+ 4 normal projects (LED/LDR)</td><td class="num">15.9 ms</td><td class="num">352 ms</td></tr>
+<tr><td>+ a display-drawing project (N)</td><td class="num">25.5 ms</td><td class="num">973 ms</td></tr>
+<tr><td>+ a thread that never yields</td><td class="num">211 ms</td><td class="num">3.4 s</td></tr>
+<tr class="hi"><td>same load, project in <b>T</b></td><td class="num">12.0 ms</td><td class="num">37 ms</td></tr>
+</table></div>
+Rule: <b>display drawing and heavy compute → T</b>; inputs like buttons → <code>cyd.buton</code> (IRQ, independent of timing). Everything else N.</div>
+
+<h2 id="e9">9. A project's web page</h2>
+<p>You want to control a project from a phone: "switch the load", "show the temperature". The classic way is a project opening its own HTTP server. Here it is <b>forbidden</b> — and there is an easier way.</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<pre><code>import socket
+s = socket.socket()
+s.bind(('0.0.0.0', 8080)); s.listen(1)
+while True:
+    c, a = s.accept()
+    req = c.recv(512)
+    c.send(b'HTTP/1.1 200 OK\r\n\r\n&lt;h1&gt;hello&lt;/h1&gt;')
+    c.close()</code></pre>
+<p>The same 15 lines in every project, a second port, parsing requests by hand.</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<span class="file">projects/yuk_kontrol.py (core)</span>
+<pre><code>mode = 'off'
+
+def r_page(req):
+    return PAGE             <span class="c"># str → html</span>
+
+def r_set(req):
+    global mode
+    mode = req['sorgu'].get('mod', mode)
+    return {'mod': mode}    <span class="c"># dict → json</span>
+
+cyd.rota('/yuk', r_page)
+cyd.rota('/yuk/ayar', r_set)
+
+try:
+    while not cyd.should_stop():
+        load.value(1 if mode == 'acik' else 0)
+        cyd.sleep(0.02)
+finally:
+    cyd.rota_sil()</code></pre>
+<p>The page lives at <code>http://&lt;board&gt;/yuk</code> and shows as a link in the panel's "Apps:" row.</p></div>
+<div class="n"><div class="t">Why</div>
+<p>A second listening socket eats internal RAM through lwIP buffers: measured, the panel froze. One socket, one port, the same server.</p>
+<p>The handler runs on <b>the server's</b> thread: no waiting inside, only read/write variables. The real work (driving the pin) is done by the main loop — page and project talk through one variable (<code>mode</code>).</p>
+<p>Routes are removed when the project ends; no other project inherits <code>/yuk</code>.</p></div>
+</div>
+
+<h2 id="e10">10. Logs and debugging</h2>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<p>A microcontroller has no screen; the only debugging tool is <code>print</code> to the serial port. A reset wipes everything; with USB unplugged you see nothing.</p>
+<pre><code>try:
+    ...
+except Exception as e:
+    print('error:', e)    <span class="c"># to serial</span></code></pre></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<p><code>print()</code> goes to three places: the panel's Console tab (live), <code>/logs/&lt;project&gt;.log</code> (persistent, 8 KB per project, survives resets), and the serial port.</p>
+<pre><code>if n % 10 == 0:                <span class="c"># not every turn</span>
+    print('%d blinks' % n)
+
+try:
+    raw = cyd.light()
+except OSError as e:
+    print('sensor read failed:', e)
+    break                      <span class="c"># don't crash: explain, exit</span></code></pre>
+<p>Select the project in the panel → <b>Saved log</b>: you see what happened even in Solo mode or after a reset.</p></div>
+<div class="n"><div class="t">Why</div>
+<p>A project printing more than 12 lines per second is throttled (the rest are counted, "N lines skipped"): print in a tight loop used to choke the panel.</p>
+<p>Lines are written in batches to spare the flash; the buffer is flushed before every reset — we fixed this ourselves so the "not responding, resetting" line is never lost.</p>
+<p><em>Catch, explain, exit</em> beats dying with a traceback: the log says "no sensor, retrying in 2 s" and you look at the wire.</p></div>
+</div>
+
+<h2 id="e11">11. The memory reality</h2>
+<p>On a PC you never think about memory; here every KB has an owner. Two pockets: the <b>Python heap</b> (project data) and <b>internal DRAM</b> (Wi-Fi, sockets, thread stacks, BLE/TLS).</p>
+<div class="tbl"><table>
+<tr><th>CYD (ESP32)</th><th class="num">Stock MicroPython</th><th class="num">CYD Studio firmware</th></tr>
+<tr><td>Internal RAM free, panel up</td><td class="num">27.8 KB</td><td class="num"><b>55 KB</b></td></tr>
+<tr><td>Python heap free</td><td class="num">80 / 137 (auto-grows)</td><td class="num">75 / 94 (<b>fixed 96</b>)</td></tr>
+<tr><td>Concurrent projects</td><td class="num">1</td><td class="num">7 normal + 2–3 threads</td></tr>
+<tr><td>NodeMCU heap free</td><td class="num">2.5–4.8 KB</td><td class="num">24.7 KB</td></tr>
+</table></div>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<p>Common rules: don't build big strings (concatenation copies), use a fixed <code>bytearray</code> instead of a growing list, call <code>gc.collect()</code> now and then, check what is left with <code>gc.mem_free()</code>.</p>
+<pre><code>import gc
+gc.collect()
+print(gc.mem_free())</code></pre></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<p>The panel's system box shows both pockets; in a project <code>cyd.dram()</code> returns internal RAM. BLE/HTTPS need 33–45 KB of <em>contiguous</em> internal RAM → those projects run in <b>S</b>.</p>
+<pre><code>PAGE = """&lt;html&gt;...&lt;/html&gt;"""    <span class="c"># 3 KB string: fine</span>
+data = bytearray(20000)            <span class="c"># 20 KB: from the heap, measured</span>
+photo = requests.get(url).content  <span class="c"># 200 KB: WON'T FIT</span></code></pre>
+<p>Large data goes in pieces: <code>ornek_sunucuya_yukle.py</code> sends 512-byte slices.</p></div>
+<div class="n"><div class="t">Why we build our own firmware</div>
+<p>Stock MicroPython grows its heap by doubling and swallowed internal RAM (76 → 12 KB); the core modules were loaded into RAM. We froze the core into flash, fixed the heap size and shrank the Wi-Fi buffers. You still write <code>.py</code>; compiling is our job.</p>
+<p>The live log ring at 250 lines held 20.7 KB and fragmented the heap → 100 lines. A display-drawing project takes 25–33 KB of heap (returned on stop).</p></div>
+</div>
+
+<h2 id="e12">12. Board differences and pin map</h2>
+<p>So the same project runs on both boards, board differences live in <b>data</b>, not code: each board's <code>cyd.py</code> declares an <code>OZELLIKLER</code> dict, and missing hardware raises an <em>explicit error</em> (never silently misbehaves).</p>
+<div class="trio">
+<div class="g"><div class="t">General</div>
+<p>What changes between boards: pin numbers, ADC range (4095 / 1023), PWM range, whether threads exist, whether there is a display, how many KB of RAM. What doesn't: every idea in §1–§7.</p></div>
+<div class="b"><div class="t">In CYD Studio</div>
+<pre><code>PIN = getattr(cyd, 'D1', 22)       <span class="c"># pin label</span>
+
+d = None
+try:
+    d = cyd.display()             <span class="c"># raises if no display</span>
+except Exception as e:
+    print('no display:', e)
+
+BIG = d.height &gt;= 160             <span class="c"># 320×240 or 128×64</span>
+if BIG: SCALE = 3
+else:   SCALE = 1</code></pre></div>
+<div class="n"><div class="t">Why</div>
+<p><code>ornek_bme280.py</code> draws large text on the CYD and a single line on the OLED board — same file. Without a display the project doesn't crash, it only logs. "Not on this board" also reaches the panel via <code>/api/caps</code>; the panel hides the missing button.</p></div>
+</div>
+<h3>CYD (ESP32-2432S028R) — the pins left for you</h3>
+<div class="tbl"><table>
+<tr><th>Pin</th><th>What</th><th>Use</th></tr>
+<tr class="hi"><td>GPIO22</td><td>Extended IO connector</td><td>in/out — button, LED, I2C SDA; <b>your main pin</b></td></tr>
+<tr class="hi"><td>GPIO27</td><td>Temp/humidity connector</td><td>in/out — second pin, I2C SCL, ULN2803</td></tr>
+<tr class="hi"><td>GPIO35</td><td>Extended IO</td><td><b>input only</b>, has ADC, no pull-up</td></tr>
+<tr><td>GPIO34</td><td>LDR (on board)</td><td><code>cyd.light()</code></td></tr>
+<tr><td>GPIO4 / 16 / 17</td><td>RGB LED</td><td><code>cyd.led(r,g,b)</code> — inverted logic, handled for you</td></tr>
+<tr><td>GPIO26</td><td>speaker</td><td><code>cyd.beep(freq, ms)</code></td></tr>
+<tr><td>GPIO21</td><td>display backlight</td><td>leave alone</td></tr>
+<tr><td>GPIO1 / 3</td><td>USB console</td><td>leave alone (the "TX/RX" connector is this too)</td></tr>
+<tr><td>2, 12–15, 18, 19, 23, 25, 32, 33, 36, 39</td><td>display, touch, SD</td><td>leave alone</td></tr>
+</table></div>
+<h3>NodeMCU (ESP8266)</h3>
+<div class="tbl"><table>
+<tr><th>Label</th><th>GPIO</th><th>Use</th></tr>
+<tr class="hi"><td>D1, D2</td><td>5, 4</td><td>easy in/out; the standard I2C pair (SCL=D1, SDA=D2)</td></tr>
+<tr class="hi"><td>D5, D6, D7</td><td>14, 12, 13</td><td>easy in/out (shared with SPI)</td></tr>
+<tr><td>D4</td><td>2</td><td>on-board blue LED, inverted — <code>cyd.led()</code></td></tr>
+<tr><td>D3, D8, D0</td><td>0, 15, 16</td><td>boot-time duties; avoid</td></tr>
+<tr><td>A0</td><td>—</td><td>the only analog, 0–1023, max 3.3 V (divider on board)</td></tr>
+</table></div>
+<p>In code you write <code>cyd.D1</code>; no need to memorise numbers.</p>
+
+<h2 id="e13">13. Template and checklist</h2>
+<span class="file">new_project.py</span>
+<pre><code><span class="c"># WHAT IT DOES: one sentence
+# WIRING: pin ↔ what</span>
+import cyd
+from machine import Pin
+
+PIN = getattr(cyd, 'D1', 22)
+INTERVAL = 0.5
+
+<span class="c"># --- setup ---</span>
+out = Pin(PIN, Pin.OUT, value=0)
+d = None
+try:
+    d = cyd.display()
+except Exception:
+    pass
+
+print('started: GPIO%d, %.1f s' % (PIN, INTERVAL))
+
+<span class="c"># --- loop ---</span>
+try:
+    while not cyd.should_stop():
+        ...                          <span class="c"># work</span>
+        if not cyd.sleep(INTERVAL):
+            break
+finally:
+    out.value(0)                     <span class="c"># cleanup: always</span>
+    print('done')</code></pre>
+<h3>Wiring a new sensor</h3>
+<ol>
+<li>Datasheet: supply <b>3.3 or 5 V</b>, output <b>digital / analog / I2C / UART</b> → which kind of pin.</li>
+<li>Wire VCC, GND, signal. If I2C, run <code>i2c_tara.py</code> → the address must appear.</li>
+<li><code>print</code> the raw value in a loop first — understand it, then write the decision code.</li>
+<li>Pick the sleep from the sensor's speed; never hard-code a threshold, measure and use a ratio.</li>
+<li>If it will have neighbours: draws on the display or computes heavily → <b>T</b>; captures input → <code>cyd.buton</code>.</li>
+</ol>
+<h3>Before you press Run</h3>
+<ul class="chk">
+<li><code>while not cyd.should_stop()</code> and all waits are <code>cyd.sleep</code></li>
+<li>outputs switched off inside <code>try/finally</code></li>
+<li>resistor on the LED, ULN2803/transistor on the load, common GND, no 5 V into inputs</li>
+<li>does the pin exist on this board (<code>getattr(cyd, 'D1', 22)</code>)</li>
+<li><code>print</code> on events, not every turn</li>
+<li>a web page → <code>cyd.rota</code>, not a second socket</li>
+<li>BLE / HTTPS → mode <b>S</b></li>
+</ul>
+
+<h2 id="e14">14. A new module: from datasheet to driver</h2>
+<p>You hold a module you have never seen; the library online doesn't fit your board or doesn't exist. Writing a driver is shorter than it sounds: take <b>three facts</b> from the datasheet, the rest is the I2C calls from §7. Example: the <b>PCF8574</b> I2C I/O expander (8 extra pins; the chip under every LCD1602 "backpack").</p>
+<div class="trio">
+<div class="g"><div class="t">Three things from the datasheet</div>
+<p><b>1. Address:</b> PCF8574 <code>0x20–0x27</code> (A0–A2 pins), PCF8574<b>A</b> <code>0x38–0x3F</code>. <code>i2c.scan()</code> tells you which.</p>
+<p><b>2. Protocol:</b> no registers. <em>Write</em> one byte and the 8 outputs become it; <em>read</em> one byte and you get the 8 pin states. Bit 0 = P0 … bit 7 = P7.</p>
+<p><b>3. The quirk:</b> "quasi-bidirectional" pins. A pin you want as an input must be <b>written 1</b> first (weak pull-up), then read. As an output, writing 0 sinks strongly (wire the LED to <b>VCC</b>, 0 = lit); writing 1 sources only a weak 100 µA. The INT pin goes LOW whenever any input changes.</p></div>
+<div class="b"><div class="t">The driver: 20 lines</div>
+<span class="file">projects/pcf8574.py</span>
+<pre><code>class PCF8574:
+    def __init__(self, i2c, addr=0x20):
+        self.i2c = i2c
+        self.addr = addr
+        self.out = 0xFF            <span class="c"># all 1: inputs / idle</span>
+        self._write()
+
+    def _write(self):
+        self.i2c.writeto(self.addr, bytes([self.out]))
+
+    def pin_write(self, p, v):     <span class="c"># p: 0–7</span>
+        if v: self.out |= (1 &lt;&lt; p)
+        else: self.out &amp;= ~(1 &lt;&lt; p) &amp; 0xFF
+        self._write()
+
+    def read(self):                <span class="c"># 8 pins, one byte</span>
+        return self.i2c.readfrom(self.addr, 1)[0]
+
+    def pin_read(self, p):
+        return (self.read() &gt;&gt; p) &amp; 1</code></pre></div>
+<div class="n"><div class="t">In a project, and why</div>
+<span class="file">projects/pcf_example.py</span>
+<pre><code>import cyd
+from machine import SoftI2C, Pin
+from pcf8574 import PCF8574
+
+i2c = SoftI2C(scl=Pin(27), sda=Pin(22))
+print('i2c:', [hex(a) for a in i2c.scan()])
+x = PCF8574(i2c, 0x20)
+x.pin_write(0, 1)            <span class="c"># P0 input: button P0↔GND</span>
+while not cyd.should_stop():
+    pressed = x.pin_read(0) == 0
+    x.pin_write(7, 0 if pressed else 1)   <span class="c"># P7 LED (to VCC)</span>
+    cyd.sleep(0.05)</code></pre>
+<p>Keeping the class in its own file: the module is unloaded when the project ends, so a fix runs next time. Polling at 50 ms: there is no interrupt over I2C (unless you wire INT to a board pin and catch it with <code>cyd.buton(pin)</code>). The PCF8574 is about <b>pin count</b>, not speed: it adds 8 to the CYD's 2 free pins.</p></div>
+</div>
+<div class="uyari"><div class="t">The general order when writing a driver</div>1) See the address with <code>scan()</code>. 2) Read the <em>ID register</em> from the datasheet's register map (if there is one, e.g. BME280 0xD0 → 0x60): it proves you reached the right chip. 3) Print one measurement as raw bytes. 4) Apply the datasheet's conversion formula. 5) Wrap it in a class with a <code>read()</code>. <code>print</code> at every step — never move on before the previous step works.</div>
+
+<h2 id="e15">15. Common modules: quick reference</h2>
+<p>Each row: wiring, library (built into the firmware where marked), the 5-line core, the trap. All of it goes inside the §13 template loop.</p>
+<div class="tbl"><table>
+<tr><th>Module</th><th>Wiring</th><th>Core code</th><th>Trap</th></tr>
+<tr><td><b>DS18B20</b> temperature (1-Wire)</td><td>VCC 3.3 · GND · DATA→pin, <b>4.7 kΩ</b> DATA–VCC</td><td><pre><code>import onewire, ds18x20   <span class="c"># built in</span>
+ow = ds18x20.DS18X20(onewire.OneWire(Pin(22)))
+roms = ow.scan()
+ow.convert_temp(); cyd.sleep(0.75)
+print(ow.read_temp(roms[0]))</code></pre></td><td>convert → wait 750 ms → read; many sensors on one wire, each with a ROM id</td></tr>
+<tr><td><b>DHT11 / DHT22</b> humidity+temp</td><td>VCC · GND · DATA→pin (module has pull-up)</td><td><pre><code>import dht                <span class="c"># built in</span>
+s = dht.DHT22(Pin(22))
+s.measure()
+print(s.temperature(), s.humidity())</code></pre></td><td>read at most every 2 s; the first read may fail, skip it with <code>try</code></td></tr>
+<tr><td><b>HC-SR04</b> distance</td><td>VCC <b>5 V</b> · GND · TRIG→pin · ECHO→pin <b>through a divider</b> (5 V output!)</td><td><pre><code>from machine import time_pulse_us
+trig = Pin(22, Pin.OUT); echo = Pin(35, Pin.IN)
+trig.value(1); time.sleep_us(10); trig.value(0)
+us = time_pulse_us(echo, 1, 30000)
+cm = us / 58</code></pre></td><td>ECHO is 5 V: 1 kΩ + 2 kΩ divider; −1/−2 means timeout</td></tr>
+<tr><td><b>Servo</b> SG90</td><td>red 5 V · brown GND · orange→pin</td><td><pre><code>pwm = PWM(Pin(22), freq=50)
+def angle(a):            <span class="c"># 0–180</span>
+    pwm.duty(int(26 + a / 180 * 102))   <span class="c"># ESP32 0–1023</span></code></pre></td><td>don't power it from the board's 3.3 V; 50 Hz is mandatory; pulse 0.5–2.5 ms</td></tr>
+<tr><td><b>Relay module</b></td><td>VCC 5 V · GND · IN→pin</td><td><pre><code>r = Pin(22, Pin.OUT, value=1)   <span class="c"># most modules: LOW = on</span>
+r.value(0)   <span class="c"># on</span>
+r.value(1)   <span class="c"># off</span></code></pre></td><td>most modules are <b>active-low</b>; the mains side is for people who know what they're doing</td></tr>
+<tr><td><b>Rotary encoder</b></td><td>CLK→pin · DT→pin · SW→pin · GND (pull-ups internal)</td><td><pre><code>clk = Pin(22, Pin.IN, Pin.PULL_UP); dt = Pin(27, Pin.IN, Pin.PULL_UP)
+count = [0]
+def turn(p): count[0] += -1 if dt.value() else 1
+clk.irq(trigger=Pin.IRQ_FALLING, handler=turn)</code></pre></td><td>polling misses steps → <b>interrupt</b>; ignore edges closer than 2 ms (bounce)</td></tr>
+<tr><td><b>NeoPixel</b> WS2812</td><td>5 V · GND · DIN→pin (330 Ω in series)</td><td><pre><code>import neopixel          <span class="c"># built in</span>
+np = neopixel.NeoPixel(Pin(22), 8)
+np[0] = (255, 0, 0); np.write()</code></pre></td><td>many LEDs = much current (60 mA/LED at white): separate 5 V; 3.3 V data usually works</td></tr>
+<tr><td><b>LCD1602 I2C</b> (PCF8574 backpack)</td><td>VCC 5 V · GND · SDA · SCL</td><td><pre><code>i2c.scan()   <span class="c"># 0x27 or 0x3F</span>
+<span class="c"># lcd_api.py + i2c_lcd.py (projects/)</span>
+lcd = I2cLcd(i2c, 0x27, 2, 16)
+lcd.putstr('CYD Studio')</code></pre></td><td>contrast pot on the back; a 5 V module can pull SDA/SCL to 5 V — most boards tolerate it, buy a 3.3 V one if unsure</td></tr>
+<tr><td><b>Potentiometer</b></td><td>ends to 3.3 V and GND · wiper→ADC</td><td><pre><code>a = ADC(Pin(35)); a.atten(ADC.ATTN_11DB)
+percent = a.read() * 100 // 4095</code></pre></td><td>never to 5 V; average 5 readings against jitter at the ends</td></tr>
+<tr><td><b>MQTT</b> (data to a server)</td><td>Wi-Fi</td><td><pre><code>from umqtt.simple import MQTTClient   <span class="c"># built in</span>
+c = MQTTClient('cyd', '192.168.0.33'); c.connect()
+c.publish(b'home/temp', b'23.5')</code></pre></td><td>plain MQTT works in normal mode; TLS (8883) needs mode <b>S</b></td></tr>
+</table></div>
+
+<h2 id="e16">16. Panel over the cable (USB bridge)</h2>
+<p>No Wi-Fi, or you want the PC to stay on the internet: the panel comes over the cable — <code>usbkopru.py</code> on the board, <code>tools/usb_panel.py</code> on the PC.</p>
+<pre><code>python tools\usb_panel.py COM4 --board nodemcu     <span class="c"># for the CYD: COM3 --board cyd</span>
+<span class="c"># browser: http://127.0.0.1:8080/   (NOT localhost - Windows tries IPv6 first, 2 s per request)</span></code></pre>
+<div class="trio">
+<div class="g"><div class="t">How it works</div>
+<p>The panel page loads instantly from the PC's disk; only <code>/api/…</code> calls travel over serial. A request is one base64 line; the board runs the same server code (<code>server._route</code>) with a fake connection and streams the reply back. The board's console output flows in the same window.</p></div>
+<div class="b"><div class="t">Measured (ESP8266)</div>
+<p>status 0.6–1 s · save/run/log/stop 0.2–0.9 s · 11 KB docs 1.5 s. Bodies over 384 bytes go in 192-byte <b>acknowledged</b> chunks: without acks the board's serial buffer overflowed and chunks arrived corrupt (<code>incorrect padding</code>).</p></div>
+<div class="n"><div class="t">Limits</div>
+<p>While the bridge runs the COM port is busy: close it with <kbd>Ctrl+C</kbd> before a <code>deploy</code>. One tab at a time. The Wi-Fi panel keeps working alongside.</p></div>
+</div>
+
+<footer>Sources: the on-board handbook <code>device/docs_en.md</code> (measurements), the board's Docs button (Shift+click: the short on-board document), the samples under <code>/projects</code>. Numbers measured on the CYD and NodeMCU in September 2026; re-measure if the board or firmware changes.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  function ayarla(d,kaydet){
+    root.setAttribute('lang',d);
+    var bs=document.querySelectorAll('.dil button');
+    for(var i=0;i<bs.length;i++)bs[i].className=bs[i].dataset.set===d?'on':'';
+    if(kaydet){try{localStorage.setItem('defter_dil',d)}catch(e){}}
+  }
+  var d='tr';
+  var h=(location.hash||'').replace('#','');
+  if(h==='en'||h==='tr')d=h;
+  else{try{d=localStorage.getItem('defter_dil')||'tr'}catch(e){}}
+  ayarla(d,false);
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.dil button');if(!b)return;
+    ayarla(b.dataset.set,true);
+  });
+})();
+</script>

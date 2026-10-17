@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYD Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0e1116;--panel:#161b22;--panel2:#1c232c;--line:#2b3440;
+--tx:#e6edf3;--dim:#8b949e;--acc:#2f9e6e;--acc2:#3fb950;
+--warn:#d29922;--err:#f85149;--blue:#58a6ff;--pur:#bc8cff}
+body{background:var(--bg);color:var(--tx);font:13.5px/1.5 ui-monospace,"Cascadia Code",Consolas,monospace;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:none}
+h1{font-size:15px;font-weight:600;letter-spacing:.5px;white-space:nowrap}
+h1 i{color:var(--acc2);font-style:normal}
+.pill{padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--panel2);border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.pill.on{background:#0d2f1f;border-color:#1f6f47;color:var(--acc2)}
+.pill.off{background:#2a1d1d;border-color:#5c2b2b;color:#f0a0a0}
+.sp{flex:1}
+button{font:inherit;font-size:12.5px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--tx);cursor:pointer;white-space:nowrap}
+button:hover{border-color:#3d4c5e;background:#232c37}
+button:disabled{opacity:.35;cursor:not-allowed}
+button.p{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+button.p:hover{background:var(--acc2);border-color:var(--acc2)}
+button.d{background:#3d1f1f;border-color:#5c2b2b;color:#f0a0a0}
+button.d:hover{background:#4d2626}
+/* calisma modu secici (secili dosya icin): N normal | T thread | S solo */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;vertical-align:middle}
+.seg button{border:0;border-radius:0;padding:4px 9px;font-size:11.5px;font-weight:700;color:#8b949e;background:transparent}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:#232d36;color:#e6ecf1}.seg button.on.T{color:#e3b341}.seg button.on.S{color:#f0883e}
+
+button.mini{padding:2px 7px;font-size:11px;line-height:1.4}
+/* Listede durum rengi: calistir yesil, durdur kirmizi. Doldurulmus
+   yesil yerine calisan is rozetleriyle ayni ton - panel butun gorunsun. */
+button.mini.g{background:#0d2f1f;border-color:#1f6f47;color:var(--acc2);font-weight:600}
+button.mini.g:hover{background:#12402a;border-color:#2a8b5c}
+button.mini.d{font-weight:600}
+main{flex:1;display:flex;min-height:0}
+aside{width:252px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;flex:none}
+.ah{padding:8px 11px;border-bottom:1px solid var(--line);display:flex;gap:5px;align-items:center}
+.ah b{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;flex:1}
+#list{flex:1;overflow-y:auto}
+.f{padding:7px 10px;border-bottom:1px solid #1e252e;display:flex;align-items:center;gap:6px}
+.f:hover{background:var(--panel2)}
+.f.sel{background:#132132;box-shadow:inset 3px 0 0 var(--blue)}
+.f .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;font-size:12.5px}
+.f .s{font-size:10.5px;color:var(--dim)}
+/* Calisan proje bir bakista belli olsun: yesil kenar cubugu secim
+   cubugunun onune gecer, cunku "calisiyor" bilgisi daha onemli. */
+.f.run{box-shadow:inset 3px 0 0 var(--acc2)}
+.f.run.sel{background:#132132;box-shadow:inset 3px 0 0 var(--acc2)}
+.f.run .n{color:var(--acc2);font-weight:600}
+/* Yildiz kucuk bir karakter - tiklama alanini genisletmezsek isabet
+   ettirmek zor oluyor. */
+.star{cursor:pointer;color:#3d4653;font-size:15px;line-height:1;
+padding:3px 4px;margin:-3px -2px;border-radius:4px;flex:none;user-select:none}
+.star:hover{color:var(--warn);background:#242c36}
+.star.on{color:var(--warn);text-shadow:0 0 6px rgba(210,153,34,.55)}
+#ara{width:100%;font:inherit;font-size:12px;padding:4px 8px;border-radius:5px;border:1px solid var(--line);background:#0b0e13;color:var(--tx);outline:0}
+#ara:focus{border-color:var(--blue)}
+kbd{font:inherit;font-size:10.5px;padding:0 4px;border:1px solid var(--line);border-radius:3px;background:#0b0e13}
+.f .acts{display:flex;gap:3px;flex:none}
+/* calisma modu cipi: N normal, T thread, S solo */
+.mod{cursor:pointer;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;
+  border:1px solid #3d4653;color:#8b949e;line-height:1.5;flex:none;user-select:none}
+.mod.T{color:#e3b341;border-color:#6b5a1e}.mod.S{color:#f0883e;border-color:#7a4a1e}
+.f.run .mod{opacity:.5;cursor:default}
+.col{flex:1;display:flex;flex-direction:column;min-width:0}
+.tb{padding:7px 11px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:none}
+.tb .nm{font-weight:600;margin-right:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:210px;font-size:12.5px}
+textarea{flex:1;background:#0b0e13;color:var(--tx);border:0;outline:0;padding:11px;font:inherit;resize:none;tab-size:4;line-height:1.55;min-height:80px}
+.lh{padding:5px 11px;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;gap:7px;align-items:center;font-size:11.5px;color:var(--dim);flex:none}
+.lh b{text-transform:uppercase;letter-spacing:.8px}
+select{background:#0b0e13;border:1px solid var(--line);border-radius:5px;color:var(--tx);font:inherit;font-size:11.5px;padding:2px 6px}
+#log{height:200px;background:#080a0e;overflow-y:auto;padding:7px 11px;font-size:12px;white-space:pre-wrap;word-break:break-word;flex:none}
+#log div{display:flex;gap:8px}
+#log .src{color:var(--pur);flex:none;min-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#log .msg{flex:1;white-space:pre-wrap;word-break:break-word}
+.e{color:var(--err)}.w{color:var(--warn)}.g{color:var(--acc2)}.b{color:var(--blue)}.dm{color:var(--dim)}
+/* right dashboard */
+#sys{width:250px;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;flex:none;padding-bottom:14px}
+#sys.hide{display:none}
+.sh{padding:8px 12px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.mt{padding:9px 12px;border-bottom:1px solid #1e252e}
+.mt .k{font-size:11px;color:var(--dim);display:flex;justify-content:space-between;gap:8px}
+.mt .k span:last-child{color:var(--tx)}
+.bar{height:6px;background:#0b0e13;border-radius:4px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc2);border-radius:4px;transition:width .4s}
+.bar i.mid{background:var(--warn)}
+.bar i.hi{background:var(--err)}
+.kv{padding:5px 12px;display:flex;justify-content:space-between;gap:8px;font-size:11.5px}
+.kv span:first-child{color:var(--dim)}
+.kv span:last-child{text-align:right;word-break:break-all}
+.chip{display:inline-flex;align-items:center;gap:5px;background:#0d2f1f;border:1px solid #1f6f47;color:var(--acc2);padding:2px 6px 2px 9px;border-radius:999px;font-size:11px;margin:3px 4px 0 0}
+.chip.stuck{background:#3d1f1f;border-color:#5c2b2b;color:#f0a0a0}
+.chip b{font-weight:600}
+.chip button{padding:0 5px;font-size:11px;line-height:1.4;border-radius:999px}
+#chips{padding:0 11px 6px;background:var(--panel);flex:none}
+#chips:empty{display:none}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.mask.on{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;width:min(440px,96vw);max-height:92vh;overflow-y:auto}
+.modal h2{font-size:14.5px;margin-bottom:12px}
+label{display:block;font-size:11.5px;color:var(--dim);margin:9px 0 3px}
+input{width:100%;padding:6px 9px;background:#0b0e13;border:1px solid var(--line);border-radius:5px;color:var(--tx);font:inherit;font-size:12.5px}
+input[type=checkbox]{width:auto;margin-right:6px;vertical-align:-2px}
+.row{display:flex;gap:8px}.row>div{flex:1}
+.mb{display:flex;gap:7px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.hint{font-size:11px;color:var(--dim);margin-top:11px;line-height:1.6}
+/* dokuman */
+.modal.doc{width:min(950px,97vw);height:92vh;display:flex;flex-direction:column;padding:14px 0 0}
+.docbar{display:flex;gap:7px;align-items:center;padding:0 16px 11px;border-bottom:1px solid var(--line)}
+.docbar b{font-size:14px}
+.dochint{padding:9px 16px;font-size:11.5px;color:var(--dim);border-bottom:1px solid var(--line);line-height:1.6}
+#docBody{flex:1;overflow-y:auto;padding:14px 18px 26px;font-size:13px;line-height:1.65}
+#docBody h1{font-size:19px;margin:4px 0 10px;color:var(--acc2)}
+#docBody h2{font-size:16px;margin:22px 0 9px;padding-top:12px;border-top:1px solid var(--line);color:var(--blue)}
+#docBody h3{font-size:14px;margin:16px 0 7px;color:var(--tx)}
+#docBody p{margin:8px 0}
+#docBody ul{margin:8px 0 8px 20px}
+#docBody li{margin:4px 0}
+#docBody code{background:#0b0e13;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;color:var(--warn)}
+#docBody pre{background:#0b0e13;border:1px solid var(--line);border-radius:6px;padding:11px 13px;overflow-x:auto;margin:10px 0}
+#docBody pre code{background:0;border:0;padding:0;color:var(--tx)}
+#docBody table{border-collapse:collapse;margin:11px 0;font-size:12px;display:block;overflow-x:auto;max-width:100%}
+#docBody th,#docBody td{border:1px solid var(--line);padding:5px 9px;text-align:left;vertical-align:top}
+#docBody th{background:var(--panel2);color:var(--dim);white-space:nowrap}
+#docBody hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+#docBody blockquote{border-left:3px solid var(--warn);margin:10px 0;padding:4px 12px;color:var(--dim)}
+#docBody a{color:var(--blue)}
+#drop{position:fixed;inset:0;background:rgba(47,158,110,.16);border:3px dashed var(--acc2);display:none;align-items:center;justify-content:center;font-size:18px;z-index:60;pointer-events:none}
+#drop.on{display:flex}
+#toast{position:fixed;bottom:16px;right:16px;background:var(--panel2);border:1px solid var(--line);padding:9px 14px;border-radius:7px;opacity:0;transition:.25s;z-index:70;max-width:330px;font-size:12.5px}
+#toast.on{opacity:1}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#2f3945;border-radius:5px}
+::-webkit-scrollbar-track{background:transparent}
+@media(max-width:900px){#sys{display:none}}
+@media(max-width:640px){aside{width:160px}#log{height:150px}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CYD<i>·</i>Studio</h1>
+  <span class="pill" id="pRun">bosta</span>
+  <span class="pill" id="pIp">-</span>
+  <span class="pill" id="pRam">-</span>
+  <span class="pill" id="pUp">-</span>
+  <span class="sp"></span>
+  <button id="bStopAll" class="d" data-t="tumunuDurdur"></button>
+  <button id="bSys" data-t="panel"></button>
+  <button id="bDoc" data-t="dokuman"></button>
+  <button id="bCfg" data-t="ayarlar"></button>
+  <button id="bDil" title="TR / EN">EN</button>
+  <button id="bBoot" data-t="reset"></button>
+</header>
+
+<main>
+  <aside>
+    <div class="ah">
+      <b data-t="projeler"></b>
+      <button class="mini" id="bNew" data-t="yeni"></button>
+      <button class="mini" id="bUp" data-t="yukle"></button>
+      <input type="file" id="file" multiple hidden>
+    </div>
+    <div class="ah"><input id="ara" data-tp="ara" autocomplete="off"></div>
+    <div id="list"></div>
+  </aside>
+
+  <div class="col">
+    <div class="tb">
+      <span class="nm" id="nm"></span>
+      <button id="bSave" class="p" data-t="kaydet"></button>
+      <span class="seg" id="modSeg"><button data-mod="normal">N</button><button data-mod="thread">T</button><button data-mod="solo">S</button></span>
+      <button id="bRun" class="p">&#9654; <span data-t="calistir"></span></button>
+      <button id="bKlog" data-t="kayitliLog" data-tt="kayitliLogTip"></button>
+      <button id="bRen" data-t="adDegistir"></button>
+      <button id="bDel" class="d" data-t="sil"></button>
+    </div>
+    <div id="chips"></div>
+    <div id="uyg" class="hint" style="display:none;margin:0;padding:4px 11px;background:var(--panel);border-bottom:1px solid var(--line)"></div>
+    <textarea id="ed" spellcheck="false" placeholder="Soldan bir dosya sec, ya da '+ yeni' ile olustur.
+
+Ayni anda 4 projeye kadar calistirabilirsin - her biri kendi thread'inde.
+
+import cyd
+
+while not cyd.should_stop():
+    cyd.led(g=True); cyd.sleep(0.5)
+    cyd.led_off();   cyd.sleep(0.5)
+"></textarea>
+    <div class="lh">
+      <b data-t="log"></b>
+      <select id="lsrc"><option value=""></option></select>
+      <label style="margin:0;color:var(--dim)"><input type="checkbox" id="lauto" checked><span data-t="otoKaydir"></span></label>
+      <span class="sp"></span>
+      <span id="lstat"></span>
+      <button class="mini" id="bLogSec" data-t="tumunuSec" data-tt="tumunuSecTip"></button>
+      <button class="mini" id="bLogKop" data-t="kopyala"></button>
+      <button class="mini" id="bClr" data-t="temizle"></button>
+    </div>
+    <div id="log" tabindex="0"></div>
+  </div>
+
+  <div id="sys">
+    <div class="sh" data-t="sistem"></div>
+    <div class="mt">
+      <div class="k"><span data-t="pyRam" data-tt="pyRamTip"></span><span id="mRam">-</span></div>
+      <div class="bar"><i id="bRam2" style="width:0"></i></div>
+    </div>
+    <div class="mt">
+      <div class="k"><span data-t="dahiliFlash"></span><span id="mFl">-</span></div>
+      <div class="bar"><i id="bFl" style="width:0"></i></div>
+    </div>
+    <div class="mt" id="idfBox" style="display:none">
+      <div class="k"><span data-t="dahiliRam" data-tt="dahiliRamTip"></span><span id="mIdf">-</span></div>
+      <div class="bar"><i id="bIdf" style="width:0"></i></div>
+      <div style="font-size:10.5px;color:var(--dim);margin-top:5px" id="idfNote"></div>
+    </div>
+    <div class="mt" id="sdBox" style="display:none">
+      <div class="k"><span data-t="sdKart"></span><span id="mSd">-</span></div>
+      <div class="bar"><i id="bSd" style="width:0"></i></div>
+    </div>
+    <div class="sh" data-t="islemci"></div>
+    <div class="kv"><span data-t="frekans"></span><span id="mFreq">-</span></div>
+    <div class="kv"><span data-t="sicaklik"></span><span id="mTemp">-</span></div>
+    <div class="kv"><span data-t="calismaSuresi"></span><span id="mUp">-</span></div>
+    <div class="kv"><span data-t="sonAcilis"></span><span id="mRst">-</span></div>
+    <div class="sh" data-t="ag"></div>
+    <div class="kv"><span data-t="mod"></span><span id="mMode">-</span></div>
+    <div class="kv"><span>IP</span><span id="mIp">-</span></div>
+    <div class="kv"><span data-t="agAdi"></span><span id="mSsid">-</span></div>
+    <div class="kv"><span data-t="sinyal"></span><span id="mRssi">-</span></div>
+    <div class="kv"><span>MAC</span><span id="mMac">-</span></div>
+    <div class="sh" data-t="yazilim"></div>
+    <div class="kv"><span>MicroPython</span><span id="mMpy">-</span></div>
+    <div class="kv"><span data-t="depolama"></span><span id="mStore">-</span></div>
+    <div class="kv"><span data-t="calisan"></span><span id="mJobs">-</span></div>
+  </div>
+</main>
+
+<div class="mask" id="mCfg"><div class="modal">
+  <h2 data-t="ayarlar"></h2>
+  <label data-t="ssid"></label><input id="cSsid" autocomplete="off">
+  <label><span data-t="sifre"></span> <span style="color:#8b949e" data-t="sifreNot"></span></label>
+  <input id="cPass" type="password" autocomplete="off">
+  <label><span data-t="statikIp"></span> <span style="color:#8b949e" data-t="statikNot"></span></label>
+  <input id="cIp" placeholder="192.168.1.217">
+  <div class="row">
+    <div><label data-t="maske"></label><input id="cMask" placeholder="255.255.255.0"></div>
+    <div><label data-t="gecit"></label><input id="cGw" placeholder="192.168.1.1"></div>
+  </div>
+  <label>DNS</label><input id="cDns" placeholder="192.168.1.1">
+
+  <div style="border-top:1px solid var(--line);margin:16px 0 0;padding-top:12px">
+    <b style="font-size:12.5px" data-t="ekranAyari"></b>
+    <div class="hint" style="margin-top:6px" id="ekranNot"></div>
+    <label data-t="yon"></label>
+    <div class="row" id="rotBtns">
+      <div><button style="width:100%" onclick="disp(0)" data-t="yon0"></button></div>
+      <div><button style="width:100%" onclick="disp(1)" data-t="yon1"></button></div>
+      <div><button style="width:100%" onclick="disp(2)" data-t="yon2"></button></div>
+      <div><button style="width:100%" onclick="disp(3)" data-t="yon3"></button></div>
+    </div>
+    <label data-t="renkSirasi"></label>
+    <div class="row">
+      <div><button style="width:100%" onclick="setBgr(1)" data-t="bgr"></button></div>
+      <div><button style="width:100%" onclick="setBgr(0)" data-t="rgb"></button></div>
+    </div>
+    <div class="row" style="margin-top:9px">
+      <div><button style="width:100%" onclick="dispTest()" data-t="testDeseni"></button></div>
+      <div><button class="p" style="width:100%" onclick="dispSave()" data-t="ayariKaydet"></button></div>
+    </div>
+    <div class="hint" id="dispNow">-</div>
+  </div>
+  <div id="depoBox" style="border-top:1px solid var(--line);margin:16px 0 0;padding-top:12px">
+    <b style="font-size:12.5px" data-t="depolamaAyar"></b>
+    <div class="hint" style="margin-top:6px" id="depoNow">-</div>
+    <div class="row" style="margin-top:8px">
+      <div><button style="width:100%" onclick="depoMod('otomatik')" data-t="depoOto"></button></div>
+      <div><button style="width:100%" onclick="depoMod('flash')" data-t="depoFlash"></button></div>
+      <div><button style="width:100%" onclick="depoMod('sd')" data-t="depoSd"></button></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div><button style="width:100%" onclick="depoTasi('sd')" data-t="tasiSd"></button></div>
+      <div><button style="width:100%" onclick="depoTasi('flash')" data-t="tasiFlash"></button></div>
+    </div>
+    <div class="hint" data-t="depoNot"></div>
+  </div>
+  <div class="hint" id="agNot"></div>
+  <div class="mb"><button onclick="closeCfg()" data-t="kapat"></button>
+    <button class="p" id="cSave" data-t="agKaydet"></button></div>
+</div></div>
+
+<div class="mask" id="mKlog"><div class="modal doc">
+  <div class="docbar">
+    <b id="klogAd"></b>
+    <span class="sp"></span>
+    <button id="klogYenile" data-t="yenile"></button>
+    <button class="d" id="klogSil" data-t="temizle"></button>
+    <button onclick="closeKlog()" data-t="kapat"></button>
+  </div>
+  <div class="dochint" id="klogNot"></div>
+  <div id="klogBody" style="flex:1;overflow-y:auto;padding:12px 16px;font-size:12px;white-space:pre-wrap;word-break:break-word"></div>
+</div></div>
+
+<div class="mask" id="mNew"><div class="modal">
+  <h2 data-t="yeniDosya"></h2>
+  <label data-t="dosyaAdi"></label><input id="nName" placeholder="proje1.py">
+  <div class="mb"><button onclick="closeNew()" data-t="vazgec"></button><button class="p" id="nOk" data-t="olustur"></button></div>
+</div></div>
+
+<div class="mask" id="mDoc"><div class="modal doc">
+  <div class="docbar">
+    <b data-t="projeDokumani"></b>
+    <span class="sp"></span>
+    <button class="p" id="dCopy" data-t="panoyaKopyala"></button>
+    <button id="dRaw"></button>
+    <button onclick="closeDoc()" data-t="kapat"></button>
+  </div>
+  <div class="dochint" id="docNot"></div>
+  <div id="docBody"></div>
+</div></div>
+
+<div id="drop" data-t="birak"></div>
+<div id="toast"></div>
+
+<script>
+var cur=null, seq=0, files=[], st={}, jobs={}, dirty=false, lsrc='', srcs={};
+function $(i){return document.getElementById(i)}
+
+/* ------------------------------------------------------------- dil
+   Arayuz metinleri tek tabloda; secim tarayicida (localStorage) durur,
+   karta tek bayt maliyeti yok. Karttan gelen log satirlari cevrilmez -
+   onlar icerik. Sade panel (boards/nodemcu) ayni anahtarlari kullanir. */
+var DIL={
+tr:{uygulamalar:'Uygulamalar:',bosta:'boşta',projeCalisiyor:' proje çalışıyor',baglantiYok:'bağlantı yok',
+tumunuDurdur:'Tümünü durdur',panel:'Panel',dokuman:'Doküman',ayarlar:'Ayarlar',reset:'Yeniden başlat',
+projeler:'Projeler',yeni:'+ yeni',yukle:'yükle',ara:'ara…  ( / )',dosyaYok:'dosya seçilmedi',
+kaydet:'Kaydet',calistir:'Çalıştır',durdur:'Durdur',kayitliLog:'Kayıtlı log',
+modN:'Normal — paylaşımlı, ~2 KB, thread yığını yok (tıkla: değiştir)',
+modT:'Thread — kendi iş parçacığı, 10–15 KB dahili RAM (tıkla: değiştir)',
+modS:'Solo — panel kapalı, tüm RAM projenin (tıkla: değiştir)',modKaydedildi:'mod: ',soloCalistir:'Solo başlat',
+depolamaAyar:'Depolama — projeler nerede dursun',depoSuAn:'ayar: ',depoSdVar:' · SD takılı',depoSdYok:' · SD yok',
+depoOto:'Otomatik',depoFlash:'Hep dahili flash',depoSd:'Hep SD kart',
+tasiSd:'Projeleri flash → SD taşı',tasiFlash:'Projeleri SD → flash taşı',
+depoNot:'Otomatik: SD takılıysa SD, yoksa flash. Taşıma kopyalar, doğrular, kaynağı siler; çalışan proje varken yapılmaz.',
+depoKaydedildi:'depolama: ',tasiSdSor:'Flash\'taki tüm projeler SD karta taşınsın mı?',tasiFlashSor:'SD karttaki tüm projeler dahili flash\'a taşınsın mı?',
+tasindi:'taşındı: ',hataVar:' hata',
+kayitliLogTip:'Bu projenin kalıcı logu — reset\'ten sonra da durur',
+soloTip:'Paneli kapatıp projeye tüm DRAM\'i bırakır — BLE / HTTPS için',adDegistir:'Ad değiştir',sil:'Sil',
+log:'Log',tumKaynaklar:'tüm kaynaklar',otoKaydir:'otomatik kaydır',tumunuSec:'Tümünü seç',
+tumunuSecTip:'logun tamamını seç (Ctrl+A)',kopyala:'Kopyala',temizle:'temizle',canli:'● canlı',
+sistem:'Sistem',pyRam:'Python RAM',pyRamTip:'Python nesneleri, değişkenler. Dahili RAM\'in içinden ayrılır.',
+dahiliFlash:'Dahili flash',dahiliRam:'Dahili RAM · BLE/TLS',
+dahiliRamTip:'Fiziksel havuz. BLE, HTTPS ve her proje thread\'i buradan yer. Python RAM de bunun içinde.',
+sdKart:'SD kart',islemci:'İşlemci',frekans:'Frekans',sicaklik:'Sıcaklık',calismaSuresi:'Çalışma süresi',
+sonAcilis:'Son açılış',ag:'Ağ',mod:'Mod',agAdi:'Ağ adı',sinyal:'Sinyal',yazilim:'Yazılım',depolama:'Depolama',
+calisan:'Çalışan',erisimNoktasi:'erişim noktası',wifiIstemci:'WiFi istemci',dahiliFlashKisa:'dahili flash',
+bleOk:'BLE ve HTTPS için yeterli',bleSolo:'BLE ~33 KB, TLS ~45 KB ister — <b>Solo</b> ile çalıştır',
+takildi:' takıldı',zorlaResetle:'zorla resetle',
+ssid:'WiFi adı (SSID)',sifre:'Şifre',sifreNot:'(boş = değiştirme)',statikIp:'Statik IP',statikNot:'(boş bırakırsan DHCP)',
+maske:'Alt ağ maskesi',gecit:'Ağ geçidi',ekranAyari:'Ekran ayarı',
+ekranNot:'Karta bakarak seç. Doğru ayarda <b>beyaz çerçeve dört kenara da değer</b> ve <b>kare kırmızı görünür</b>. Tıkladığın an ekrana uygulanır.',
+yon:'Yön',yon0:'0 yatay',yon1:'1 dikey',yon2:'2 yatay ters',yon3:'3 dikey ters',renkSirasi:'Renk sırası',
+bgr:'BGR (varsayılan)',rgb:'RGB (kare maviyse bunu seç)',testDeseni:'Test desenini tekrar çiz',ayariKaydet:'Bu ayarı kaydet',
+agNot:'Ağ ayarlarını kaydedince kart yeniden başlar. Bağlanamazsa <b>CYD-Studio</b> adlı kendi ağını açar (şifre <b>cyd12345</b>), <b>192.168.4.1</b> adresinden düzeltebilirsin.',
+kapat:'Kapat',agKaydet:'Ağ ayarlarını kaydet ve yeniden başlat',
+klogNot:'Bu log <b>flash\'ta</b> tutulur, reset\'ten sonra da durur. Solo modda panel kapalı olduğu için projenin çıktısını ancak buradan görebilirsin. Dosya büyüyünce en eski kayıtlar atılır.',
+yenile:'Yenile',yeniDosya:'Yeni dosya',dosyaAdi:'Dosya adı',vazgec:'Vazgeç',olustur:'Oluştur',
+projeDokumani:'Proje dokümanı',panoyaKopyala:'Panoya kopyala',hamMetin:'Ham metin',bicimli:'Biçimli göster',
+docNot:'Yeni bir Claude Code oturumu açarken bunu yapıştır — deploy komutlarını, flash yordamını, bellek sınırlarını ve tuzakları bilir. Bilgisayarda aynı dosya: <code>C:\\Users\\admin\\CYD-Studio\\CLAUDE.md</code>',
+yukleniyor:'yükleniyor…',birak:'Dosyaları bırak → karta yüklenir',
+onceSec:'önce bir dosya seç',kaydedildi:'kaydedildi: ',kirli:'Kaydedilmemiş değişiklikler var. Yine de açılsın mı?',
+calisiyor:'çalışıyor: ',durduruluyor:'durduruluyor…',soloBas:'solo modda başlatılıyor — panel kapanacak, çıktı kayıtlı loga yazılacak',
+resetleniyor:'kart yeniden başlatılıyor…',acilistaCalisacak:'açılışta çalışacak: ',acilistanCikarildi:'açılıştan çıkarıldı: ',
+zorlaSor:'Cihaz zorla yeniden başlatılacak. Tüm projeler duracak. Devam?',projeDurduruluyor:' proje durduruluyor',
+resetSor:'Kart yeniden başlatılsın mı?',silSor:' silinsin mi?',silindi:'silindi',yeniAd:'Yeni ad:',
+yenidenAdlandirildi:'yeniden adlandırıldı',
+soloSor:' SOLO modda çalıştırılacak.\n\nKart yeniden başlar, web paneli AÇILMAZ — proje dahili RAM\'i tek başına alır.\n\nPaneli geri getirmek için karta RESET tuşuna bas.\n\nDevam?',
+wifiSor:'WiFi AÇIK kalsın mı?\n\nTAMAM  = WiFi açık  (~33 KB kalır — HTTP, MQTT için yeter)\nİPTAL  = WiFi kapalı (~77 KB kalır — BLE için bu gerekli)\n\nNot: WiFi kapalıysa karta ağdan erişemezsin, RESET ile geri gelir.',
+soloBas2:'solo modda başlatılıyor',wifiKapali:' (WiFi kapalı)',panelKapanacak:' — panel kapanacak',
+dosyaYuklendi:' dosya yüklendi',yuklenemedi:' yüklenemedi',logBos:'log boş',logKopyalandi:'log panoya kopyalandı (',karakter:' karakter)',
+kopyalanamadi:'kopyalanamadı — seçildi, Ctrl+C ile al',
+kayitYok:'Bu proje için kayıt yok.\n\nProjeyi bir kez çalıştır, çıktısı buraya yazılır ve reset atsan bile durur.',
+logOkunamadi:'log okunamadı',klogSilSor:' için kayıtlı log silinsin mi?',klogSilindi:'kayıtlı log silindi',
+dokKopyalandi:'doküman panoya kopyalandı',dokKopyalanamadi:'kopyalanamadı — "Ham metin" ile seçip kopyala',
+dokYok:'Doküman karta yüklenmemiş. PC\'de: python tools\\deploy.py',
+suAn:'şu an: yön ',renk:', renk ',kaydedildiBuyuk:' — KAYDEDİLDİ',kaydedilmedi:' (kaydedilmedi)',ekranKaydedildi:'ekran ayarı kaydedildi',
+wifiKaydedildi:'kaydedildi, kart yeniden başlatılıyor…',eslesenYok:'eşleşen yok',
+hicDosya:'Hiç dosya yok.<br>"+ yeni" ile oluştur ya da sürükleyip bırak.',kaydedilmemis:'Kaydedilmemiş değişiklikler var.',
+yeniAdVer:'Yeni ad:'},
+en:{uygulamalar:'Apps:',bosta:'idle',projeCalisiyor:' running',baglantiYok:'no connection',
+tumunuDurdur:'Stop all',panel:'Panel',dokuman:'Docs',ayarlar:'Settings',reset:'Restart',
+projeler:'Projects',yeni:'+ new',yukle:'upload',ara:'search…  ( / )',dosyaYok:'no file selected',
+kaydet:'Save',calistir:'Run',durdur:'Stop',kayitliLog:'Saved log',
+modN:'Normal — shared worker, ~2 KB, no thread stack (click to change)',
+modT:'Thread — own thread, 10–15 KB internal RAM (click to change)',
+modS:'Solo — panel off, all RAM to the project (click to change)',modKaydedildi:'mode: ',soloCalistir:'Start solo',
+depolamaAyar:'Storage — where projects live',depoSuAn:'setting: ',depoSdVar:' · SD present',depoSdYok:' · no SD',
+depoOto:'Automatic',depoFlash:'Always internal flash',depoSd:'Always SD card',
+tasiSd:'Move projects flash → SD',tasiFlash:'Move projects SD → flash',
+depoNot:'Automatic: SD when a card is present, else flash. Moving copies, verifies, then deletes the source; not while a project runs.',
+depoKaydedildi:'storage: ',tasiSdSor:'Move ALL projects from flash to the SD card?',tasiFlashSor:'Move ALL projects from the SD card to internal flash?',
+tasindi:'moved: ',hataVar:' errors',
+kayitliLogTip:'This project\'s persistent log — survives resets',
+soloTip:'Closes the panel and gives the project all DRAM — for BLE / HTTPS',adDegistir:'Rename',sil:'Delete',
+log:'Log',tumKaynaklar:'all sources',otoKaydir:'auto-scroll',tumunuSec:'Select all',
+tumunuSecTip:'select the whole log (Ctrl+A)',kopyala:'Copy',temizle:'clear',canli:'● live',
+sistem:'System',pyRam:'Python RAM',pyRamTip:'Python objects and variables. Carved out of internal RAM.',
+dahiliFlash:'Internal flash',dahiliRam:'Internal RAM · BLE/TLS',
+dahiliRamTip:'The physical pool. BLE, HTTPS and every project thread come from here; Python RAM is inside it too.',
+sdKart:'SD card',islemci:'CPU',frekans:'Clock',sicaklik:'Temperature',calismaSuresi:'Uptime',
+sonAcilis:'Last reset',ag:'Network',mod:'Mode',agAdi:'SSID',sinyal:'Signal',yazilim:'Software',depolama:'Storage',
+calisan:'Running',erisimNoktasi:'access point',wifiIstemci:'WiFi client',dahiliFlashKisa:'internal flash',
+bleOk:'enough for BLE and HTTPS',bleSolo:'BLE needs ~33 KB, TLS ~45 KB — run with <b>Solo</b>',
+takildi:' stuck',zorlaResetle:'force reset',
+ssid:'WiFi name (SSID)',sifre:'Password',sifreNot:'(empty = keep)',statikIp:'Static IP',statikNot:'(empty = DHCP)',
+maske:'Netmask',gecit:'Gateway',ekranAyari:'Display setup',
+ekranNot:'Look at the board. When it\'s right, the <b>white frame touches all four edges</b> and the <b>square looks red</b>. Applied the moment you click.',
+yon:'Rotation',yon0:'0 landscape',yon1:'1 portrait',yon2:'2 landscape flipped',yon3:'3 portrait flipped',renkSirasi:'Colour order',
+bgr:'BGR (default)',rgb:'RGB (pick if the square is blue)',testDeseni:'Redraw test pattern',ayariKaydet:'Save this setting',
+agNot:'Saving network settings restarts the board. If it cannot connect it opens its own network <b>CYD-Studio</b> (password <b>cyd12345</b>); fix things at <b>192.168.4.1</b>.',
+kapat:'Close',agKaydet:'Save network settings and restart',
+klogNot:'This log lives in <b>flash</b> and survives resets. In Solo mode the panel is closed, so this is the only place to see the project\'s output. Oldest lines are dropped as the file grows.',
+yenile:'Refresh',yeniDosya:'New file',dosyaAdi:'File name',vazgec:'Cancel',olustur:'Create',
+projeDokumani:'Project docs',panoyaKopyala:'Copy to clipboard',hamMetin:'Raw text',bicimli:'Formatted',
+docNot:'Paste this when starting a new Claude Code session — it covers deploy commands, the flash procedure, memory limits and the traps. Same file on the PC: <code>C:\\Users\\admin\\CYD-Studio\\CLAUDE.md</code>',
+yukleniyor:'loading…',birak:'Drop files → uploaded to the board',
+onceSec:'select a file first',kaydedildi:'saved: ',kirli:'Unsaved changes. Open anyway?',
+calisiyor:'running: ',durduruluyor:'stopping…',soloBas:'starting in solo mode — panel will close, output goes to the saved log',
+resetleniyor:'board is restarting…',acilistaCalisacak:'runs at boot: ',acilistanCikarildi:'removed from boot: ',
+zorlaSor:'The board will be force-restarted. All projects stop. Continue?',projeDurduruluyor:' project(s) stopping',
+resetSor:'Restart the board?',silSor:' — delete?',silindi:'deleted',yeniAd:'New name:',
+yenidenAdlandirildi:'renamed',
+soloSor:' will run in SOLO mode.\n\nThe board restarts and the web panel does NOT open — the project gets internal RAM to itself.\n\nPress RESET on the board to get the panel back.\n\nContinue?',
+wifiSor:'Keep WiFi ON?\n\nOK      = WiFi on  (~33 KB left — enough for HTTP, MQTT)\nCANCEL  = WiFi off (~77 KB left — needed for BLE)\n\nNote: with WiFi off the board is unreachable over the network; RESET brings it back.',
+soloBas2:'starting in solo mode',wifiKapali:' (WiFi off)',panelKapanacak:' — panel will close',
+dosyaYuklendi:' file(s) uploaded',yuklenemedi:' upload failed',logBos:'log is empty',logKopyalandi:'log copied (',karakter:' chars)',
+kopyalanamadi:'could not copy — selected, use Ctrl+C',
+kayitYok:'No log for this project yet.\n\nRun it once; its output lands here and survives resets.',
+logOkunamadi:'could not read log',klogSilSor:' — delete its saved log?',klogSilindi:'saved log deleted',
+dokKopyalandi:'docs copied to clipboard',dokKopyalanamadi:'could not copy — use "Raw text" and copy manually',
+dokYok:'Docs not on the board. On the PC: python tools\\deploy.py',
+suAn:'now: rotation ',renk:', colour ',kaydedildiBuyuk:' — SAVED',kaydedilmedi:' (not saved)',ekranKaydedildi:'display setting saved',
+wifiKaydedildi:'saved, board is restarting…',eslesenYok:'no match',
+hicDosya:'No files yet.<br>Create one with "+ new" or drag & drop.',kaydedilmemis:'You have unsaved changes.',
+yeniAdVer:'New name:'}};
+var dil='tr';try{dil=localStorage.getItem('dil')||'tr'}catch(e){}
+function t(k){var d=DIL[dil]||DIL.tr;return (k in d)?d[k]:(DIL.tr[k]||k)}
+function dilUygula(){
+  document.documentElement.lang=dil;
+  var i,e=document.querySelectorAll('[data-t]');for(i=0;i<e.length;i++)e[i].textContent=t(e[i].dataset.t);
+  e=document.querySelectorAll('[data-tp]');for(i=0;i<e.length;i++)e[i].placeholder=t(e[i].dataset.tp);
+  e=document.querySelectorAll('[data-tt]');for(i=0;i<e.length;i++)e[i].title=t(e[i].dataset.tt);
+  try{syncBtns()}catch(e2){}
+  $('ekranNot').innerHTML=t('ekranNot');$('agNot').innerHTML=t('agNot');
+  $('klogNot').innerHTML=t('klogNot');$('docNot').innerHTML=t('docNot');
+  $('bDil').textContent=dil==='tr'?'EN':'TR';
+  if(!cur)$('nm').textContent=t('dosyaYok');
+  $('dRaw').textContent=docRaw?t('bicimli'):t('hamMetin');
+  rebuildSrc();paint()}
+$('bDil').onclick=function(){dil=dil==='tr'?'en':'tr';try{localStorage.setItem('dil',dil)}catch(e){}dilUygula();status()};
+
+function toast(m,cls){var t=$('toast');t.innerHTML='<span class="'+(cls||'')+'">'+m+'</span>';
+  t.className='on';clearTimeout(t._t);t._t=setTimeout(function(){t.className=''},2800)}
+function api(p,o){return fetch(p,o).then(function(r){
+  var ct=r.headers.get('content-type')||'';
+  return ct.indexOf('json')>=0?r.json():r.text()})}
+function fmt(n){if(n==null)return '-';if(n<1024)return n+' B';
+  if(n<1048576)return (n/1024).toFixed(1)+' KB';return (n/1048576).toFixed(2)+' MB'}
+function dur(s){if(s==null)return '-';var d=Math.floor(s/86400);s%=86400;
+  var h=Math.floor(s/3600);s%=3600;var m=Math.floor(s/60);s%=60;
+  if(d)return d+'g '+h+'s';if(h)return h+'s '+m+'d';if(m)return m+'d '+s+'sn';return s+' sn'}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function bar(el,used,total){var p=total?Math.round(used/total*100):0;
+  el.style.width=Math.min(100,p)+'%';el.className=p>88?'hi':(p>65?'mid':'')}
+
+/* ------------------------------------------------ status + dashboard */
+function status(){
+  api('/api/status').then(function(s){
+    st=s;jobs={};(s.jobs||[]).forEach(function(j){jobs[j.name]=j});
+    var run=(s.jobs||[]).filter(function(j){return j.running});
+    var p=$('pRun');
+    if(run.length){p.className='pill on';p.textContent=run.length+t('projeCalisiyor')}
+    else{p.className='pill';p.textContent=t('bosta')}
+    var y=s.sys||{},n=s.net||{};
+    $('pIp').textContent=(n.mode==='ap'?'AP ':'')+(n.ip||'-');
+    $('pRam').textContent='RAM '+fmt(y.ram_free);
+    $('pUp').textContent=dur(y.uptime);
+
+    $('mRam').textContent=fmt(y.ram_free)+' bos / '+fmt(y.ram_total);
+    bar($('bRam2'),y.ram_used,y.ram_total);
+    if(y.flash){$('mFl').textContent=fmt(y.flash.used)+' / '+fmt(y.flash.total);
+      bar($('bFl'),y.flash.used,y.flash.total)}
+    if(y.idf){$('idfBox').style.display='';
+      $('mIdf').textContent=fmt(y.idf.free)+' bos / '+fmt(y.idf.total);
+      bar($('bIdf'),y.idf.used,y.idf.total);
+      var kb=y.idf.free/1024;
+      $('idfNote').innerHTML=(kb>=40)?'<span class="g">'+t('bleOk')+'</span>':t('bleSolo');
+    }else{$('idfBox').style.display='none'}
+    if(y.sd){$('sdBox').style.display='';$('mSd').textContent=fmt(y.sd.used)+' / '+fmt(y.sd.total);
+      bar($('bSd'),y.sd.used,y.sd.total)}else{$('sdBox').style.display='none'}
+    $('mFreq').textContent=y.freq?(y.freq/1000000)+' MHz':'-';
+    $('mTemp').textContent=(y.temp==null)?'-':(Math.round(y.temp*10)/10)+' C';
+    $('mUp').textContent=dur(y.uptime);
+    $('mRst').textContent=y.reset_cause||'-';
+    $('mMode').textContent=n.mode==='ap'?t('erisimNoktasi'):(n.mode==='sta'?t('wifiIstemci'):'-');
+    $('mIp').textContent=n.ip||'-';
+    $('mSsid').textContent=n.ssid||'-';
+    $('mRssi').textContent=(y.rssi==null)?'-':y.rssi+' dBm';
+    $('mMac').textContent=y.mac||'-';
+    $('mMpy').textContent=(y.mpy||'').replace('MicroPython ','')||'-';
+    $('mStore').textContent=(s.storage&&s.storage.on_sd)?t('sdKart'):t('dahiliFlashKisa');
+    $('mJobs').textContent=run.length+' / '+(s.max_jobs||4);
+
+    chips(run);paint();syncBtns();
+    /* Projelerin cyd.rota() ile actigi sayfalar - ayni portta, tiklanabilir. */
+    var R=s.rotalar||[],U=$('uyg');
+    if(R.length){U.style.display='';U.innerHTML=t('uygulamalar')+' '+R.map(function(r){
+      return '<a href="'+esc(r.yol)+'" target="_blank" style="color:var(--blue);margin-right:6px">'+esc(r.yol)+'</a>'
+        +'<span style="color:var(--dim);margin-right:12px">('+esc(r.proje)+')</span>'}).join('')}
+    else U.style.display='none';
+  }).catch(function(){$('pRun').className='pill off';$('pRun').textContent=t('baglantiYok')})
+}
+
+function chips(run){
+  var h='';
+  run.forEach(function(j){
+    h+='<span class="chip'+(j.stuck?' stuck':'')+'"><b>'+esc(j.name)+'</b> '+dur(j.seconds)
+      +(j.stuck?t('takildi'):'')
+      +' <button onclick="stopJob(\''+encodeURIComponent(j.name)+'\')">&#9632;</button></span>'});
+  if(run.some(function(j){return j.stuck}))
+    h+='<button class="mini d" style="margin-left:6px" onclick="force()">'+t('zorlaResetle')+'</button>';
+  $('chips').innerHTML=h;
+}
+
+function syncBtns(){
+  /* Tek dugme: kosuyorsa Durdur, degilse Calistir (S modunda Solo baslat).
+     Mod secici secili dosyanin kayitli modunu gosterir; kosarken kilitli. */
+  var j=cur?jobs[cur]:null, running=!!(j&&j.running), m=cur?modOf(cur):'normal';
+  var r=$('bRun');r.disabled=!cur;r.className=running?'d':'p';
+  r.innerHTML=(running?'&#9632; ':'&#9654; ')+'<span>'+esc(running?t('durdur'):(m==='solo'?t('soloCalistir'):t('calistir')))+'</span>';
+  $('bDel').disabled=!cur||running;
+  $('bStopAll').disabled=!(st.jobs||[]).some(function(x){return x.running});
+  var bs=$('modSeg').querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){var b=bs[i],mm=b.dataset.mod;
+    b.className=(mm===m?'on ':'')+(mm==='thread'?'T':mm==='solo'?'S':'N');
+    b.disabled=!cur||running;
+    b.title=t(mm==='thread'?'modT':mm==='solo'?'modS':'modN');
+    b.style.display=(mm==='thread'&&caps.threads===false)?'none':''}
+}
+$('modSeg').onclick=function(e){var b=e.target.closest('button');if(!b||b.disabled||!cur)return;setMod(cur,b.dataset.mod)};
+function setMod(n,m){
+  api('/api/mod?name='+encodeURIComponent(n)+'&mod='+m,{method:'POST'}).then(function(r){
+    if(r.ok){modlar=r.modlar||modlar;toast(t('modKaydedildi')+m+' — '+n,'g');paint();syncBtns()}else toast(r.error,'e')})}
+
+/* ------------------------------------------------------------- log */
+function poll(){
+  api('/api/log?since='+seq).then(function(r){
+    if(!r||!r.ok)return;
+    if(r.seq<seq){seq=0;$('log').innerHTML='';srcs={};rebuildSrc()}
+    var box=$('log'),stick=$('lauto').checked;
+    var added=false;
+    r.lines.forEach(function(l){
+      seq=l[0];var src=l[1],t=l[2],c='';
+      if(!srcs[src]){srcs[src]=1;rebuildSrc()}
+      if(t.indexOf('!!!')===0)c='e';else if(t.indexOf('>>>')===0)c='g';
+      else if(t.indexOf('<<<')===0)c='b';else if(t.indexOf('...')===0)c='w';
+      if(src==='sistem')c=c||'dm';
+      if(lsrc&&src!==lsrc)return;
+      var d=document.createElement('div');
+      d.innerHTML='<span class="src">'+esc(src)+'</span><span class="msg '+c+'">'+esc(t)+'</span>';
+      box.appendChild(d);added=true});
+    while(box.childNodes.length>600)box.removeChild(box.firstChild);
+    if(added&&stick)box.scrollTop=box.scrollHeight;
+    var run=(st.jobs||[]).filter(function(j){return j.running});
+    $('lstat').textContent=run.length?t('canli'):'';
+  }).catch(function(){})
+}
+function rebuildSrc(){
+  var s=$('lsrc'),v=s.value;
+  var h='<option value="">'+t('tumKaynaklar')+'</option>';
+  Object.keys(srcs).sort().forEach(function(k){h+='<option value="'+esc(k)+'">'+esc(k)+'</option>'});
+  s.innerHTML=h;s.value=v;
+}
+$('lsrc').onchange=function(){lsrc=this.value;seq=0;$('log').innerHTML='';poll()};
+$('bClr').onclick=function(){api('/api/log/clear',{method:'POST'});$('log').innerHTML='';seq=0};
+
+/* Log kutusu: kendi icinde Ctrl+A ve kopyala.
+   Varsayilan Ctrl+A tum sayfayi seciyordu - editor gibi davransin. */
+function logSec(){
+  var el=$('log'),r=document.createRange();
+  r.selectNodeContents(el);
+  var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+  return el.innerText||el.textContent}
+$('bLogSec').onclick=function(){logSec();$('log').focus()};
+$('log').addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&(e.key==='a'||e.key==='A')){e.preventDefault();logSec()}});
+$('bLogKop').onclick=function(){
+  var metin=$('log').innerText||$('log').textContent;
+  if(!metin.trim())return toast(t('logBos'),'w');
+  var bitti=function(){toast(t('logKopyalandi')+metin.length+t('karakter'),'g')};
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(metin).then(bitti,yedek)}else yedek();
+  function yedek(){
+    /* HTTP uzerinden clipboard API kapali - eski yontem */
+    var ta=document.createElement('textarea');
+    ta.value=metin;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');bitti()}
+    catch(e){logSec();toast(t('kopyalanamadi'),'w')}
+    document.body.removeChild(ta)}};
+
+/* ------------------------------------------------------- file list */
+var modlar={};
+function list(){return api('/api/list').then(function(r){files=r.files||[];modlar=r.modlar||{};paint()})}
+/* Calisma modu: dosya basina kalici (config.json "modlar"). Thread'i olmayan
+   kartta (caps.threads=false) T atlanir; varsayilan normal. */
+function modOf(n){var m=modlar[n]||'normal';if(m==='thread'&&caps.threads===false)m='normal';return m}
+function modChip(n,q,run){
+  var m=modOf(n),L={normal:'N',thread:'T',solo:'S'}[m],tip={normal:'modN',thread:'modT',solo:'modS'}[m];
+  return '<span class="mod '+L+'" title="'+t(tip)+'"'+(run?'':' onclick="toggleMod(\''+q+'\',event)"')+'>'+L+'</span>'}
+function toggleMod(q,e){
+  if(e)e.stopPropagation();
+  var n=decodeURIComponent(q),sira=caps.threads===false?['normal','solo']:['normal','thread','solo'];
+  setMod(n,sira[(sira.indexOf(modOf(n))+1)%sira.length])}
+/* Arama: yazdikca suzer, Enter yok. Turkce harfleri katlar ki "söndür"
+   yazan "sondur"u da bulsun. */
+function kat(s){return String(s).toLowerCase().replace(/ş/g,'s').replace(/ö/g,'o')
+  .replace(/ü/g,'u').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/i̇/g,'i')}
+function paint(){
+  var h='',q0=kat(($('ara').value||'').trim());
+  files.forEach(function(f){
+    if(q0&&kat(f.name).indexOf(q0)<0)return;
+    var j=jobs[f.name],run=j&&j.running;
+    var auto=(st.autostart||[]).indexOf(f.name)>=0;
+    var q=encodeURIComponent(f.name);
+    h+='<div class="f'+(f.name===cur?' sel':'')+(run?' run':'')+'">'
+      +'<span class="star'+(auto?' on':'')+'" title="'+t('acilistaCalisacak').replace(': ','')+'" onclick="toggleAuto(\''+q+'\',event)">&#9733;</span>'
+      +'<span class="n" onclick="open2(\''+q+'\')">'+esc(f.name)+'</span>'
+      +'<span class="s">'+fmt(f.size)+'</span><span class="acts">'
+      +(f.py?modChip(f.name,q,run):'')
+      +(f.py?('<button class="mini '+(run?'d':'g')+'" title="'+(run?t('durdur'):t('calistir'))+'"'
+        +' onclick="'+(run?'stopJob':'runJob')+'(\''+q+'\')">'
+        +(run?'&#9632;':'&#9654;')+'</button>'):'')
+      +(run?'':'<button class="mini" title="'+t('sil')+'" onclick="delFile(\''+q+'\')">&#10005;</button>')
+      +'</span></div>'});
+  $('list').innerHTML=h||'<div style="padding:13px;color:#8b949e;font-size:11.5px">'+(q0?t('eslesenYok'):t('hicDosya'))+'</div>';
+}
+$('ara').oninput=paint;
+$('ara').onkeydown=function(e){if(e.key==='Escape'){this.value='';paint();this.blur()}};
+
+function open2(q){
+  var n=decodeURIComponent(q);
+  if(dirty&&cur&&!confirm(t('kirli')))return;
+  api('/api/file?name='+q).then(function(t){
+    // hata JSON'u editore yazilmasin ("[object Object]" + Ctrl+S dosyayi ezer)
+    if(typeof t!=='string'){toast(esc((t&&t.error)||'dosya okunamadi'),'e');return}
+    cur=n;dirty=false;$('nm').textContent=n;$('ed').value=t;paint();syncBtns()})
+}
+
+/* --------------------------------------------------------- actions */
+/* force=true sadece "Kaydet" dugmesinden gelir. Calistir'in sessizce
+   kaydetmesi, editorde duran eski bir kopyayi cihazdaki yeni surumun
+   uzerine yaziyordu - degismediyse hic dokunma. */
+function save(force){
+  if(!cur)return Promise.resolve();
+  if(!force&&!dirty)return Promise.resolve();
+  return fetch('/api/save?name='+encodeURIComponent(cur),{method:'POST',body:$('ed').value})
+    .then(function(r){return r.json()}).then(function(r){
+      if(r.ok){dirty=false;toast(t('kaydedildi')+cur,'g');list()}else toast(r.error,'e')})}
+function runJob(q){
+  if(modOf(decodeURIComponent(q))==='solo'){
+    /* Solo secili: panelin Solo akisi (onay + WiFi sorusu) */
+    var eski=cur;cur=decodeURIComponent(q);soloRun();if(!cur)cur=eski;return}
+  api('/api/run?name='+q,{method:'POST'}).then(function(r){
+    if(r&&r.solo){
+      /* Sunucu istegi solo'ya cevirdi: kart yeniden baslayacak. */
+      toast(t('soloBas'),'w');
+      setTimeout(function(){location.reload()},9000);
+      return}
+    r.ok?toast(t('calisiyor')+decodeURIComponent(q),'g'):toast(r.error,'e');status()
+  }).catch(function(){
+    toast(t('resetleniyor'),'w');
+    setTimeout(function(){location.reload()},9000)})}
+function stopJob(q){
+  api('/api/stop?name='+q,{method:'POST'}).then(function(r){
+    r.ok?toast(t('durduruluyor'),'w'):toast(r.error,'e');status()})}
+function delFile(q){
+  var n=decodeURIComponent(q);
+  if(!confirm(n+t('silSor')))return;
+  api('/api/delete?name='+q,{method:'POST'}).then(function(r){
+    if(r.ok){toast(t('silindi'),'w');
+      if(n===cur){cur=null;$('ed').value='';$('nm').textContent=t('dosyaYok');dirty=false}
+      list();syncBtns()}
+    else toast(r.error,'e')})}
+function toggleAuto(q,ev){
+  ev.stopPropagation();
+  var n=decodeURIComponent(q),on=(st.autostart||[]).indexOf(n)>=0?'0':'1';
+  api('/api/autostart?name='+q+'&on='+on,{method:'POST'}).then(function(r){
+    st.autostart=r.autostart;toast(on==='1'?(t('acilistaCalisacak')+n):(t('acilistanCikarildi')+n),'g');paint()})}
+function force(){
+  if(!confirm(t('zorlaSor')))return;
+  api('/api/force',{method:'POST'}).catch(function(){});
+  toast(t('resetleniyor'),'w');setTimeout(function(){location.reload()},8000)}
+
+$('bSave').onclick=function(){save(true)};
+$('bRun').onclick=function(){if(!cur)return toast(t('onceSec'),'w');
+  var j=jobs[cur];if(j&&j.running)return stopJob(encodeURIComponent(cur));
+  if(modOf(cur)==='solo')return soloRun();
+  save().then(function(){runJob(encodeURIComponent(cur))})};
+$('bStopAll').onclick=function(){api('/api/stopall',{method:'POST'}).then(function(r){
+  toast((r.stopped||0)+t('projeDurduruluyor'),'w');status()})};
+$('bBoot').onclick=function(){
+  if(!confirm(t('resetSor')))return;
+  api('/api/reset',{method:'POST'}).catch(function(){});
+  toast(t('resetleniyor'),'w');setTimeout(function(){location.reload()},8000)};
+$('bDel').onclick=function(){if(!cur)return toast(t('onceSec'),'w');delFile(encodeURIComponent(cur))};
+$('bRen').onclick=function(){
+  if(!cur)return;var n=prompt(t('yeniAd'),cur);if(!n||n===cur)return;
+  api('/api/rename?name='+encodeURIComponent(cur)+'&to='+encodeURIComponent(n),{method:'POST'})
+   .then(function(r){if(r.ok){cur=r.name;$('nm').textContent=cur;toast(t('yenidenAdlandirildi'),'g');list()}
+     else toast(r.error,'e')})};
+$('bSys').onclick=function(){$('sys').classList.toggle('hide')};
+function soloRun(){
+  if(!cur)return toast(t('onceSec'),'w');
+  if(!confirm(cur+t('soloSor')))return;
+  var wifi=confirm(t('wifiSor'))?1:0;
+  save().then(function(){
+    return fetch('/api/solo?name='+encodeURIComponent(cur)+'&wifi='+wifi,
+      {method:'POST'})}).catch(function(){});
+  toast(t('soloBas2')+(wifi?'':t('wifiKapali'))+t('panelKapanacak'),'w')};
+
+/* -------------------------------------------------------- new file */
+$('bNew').onclick=function(){$('mNew').className='mask on';$('nName').value='';$('nName').focus()};
+function closeNew(){$('mNew').className='mask'}
+$('nOk').onclick=function(){
+  var n=$('nName').value.trim();if(!n)return;
+  if(n.indexOf('.')<0)n+='.py';
+  fetch('/api/save?name='+encodeURIComponent(n),{method:'POST',
+    body:'# '+n+'\nimport cyd\n\nwhile not cyd.should_stop():\n    print("merhaba")\n    cyd.sleep(1)\n'})
+   .then(function(r){return r.json()}).then(function(r){
+     if(r.ok){closeNew();list().then(function(){open2(encodeURIComponent(n))})}else toast(r.error,'e')})};
+
+/* ---------------------------------------------------------- upload */
+$('bUp').onclick=function(){$('file').click()};
+$('file').onchange=function(e){send(e.target.files);e.target.value=''};
+function send(fl){
+  var arr=Array.prototype.slice.call(fl),i=0,okc=0;
+  (function next(){
+    if(i>=arr.length){list();return toast(okc+t('dosyaYuklendi'),'g')}
+    var f=arr[i++];
+    f.arrayBuffer().then(function(buf){
+      return fetch('/api/save?name='+encodeURIComponent(f.name),{method:'POST',body:buf})})
+     .then(function(r){return r.json()})
+     .then(function(r){if(r.ok)okc++;else toast(f.name+': '+r.error,'e');next()})
+     .catch(function(){toast(f.name+t('yuklenemedi'),'e');next()})})()}
+['dragenter','dragover'].forEach(function(ev){
+  document.addEventListener(ev,function(e){e.preventDefault();$('drop').className='on'})});
+['dragleave','drop'].forEach(function(ev){
+  document.addEventListener(ev,function(e){e.preventDefault();
+    if(ev==='drop'||e.clientX<=0)$('drop').className=''})});
+document.addEventListener('drop',function(e){
+  if(e.dataTransfer&&e.dataTransfer.files.length)send(e.dataTransfer.files)});
+
+/* ---------------------------------------------------- kalici log */
+function klogYukle(){
+  if(!cur)return;
+  $('klogAd').textContent=t('kayitliLog')+': '+cur;
+  $('klogBody').textContent=t('yukleniyor');
+  fetch('/api/log/file?name='+encodeURIComponent(cur))
+    .then(function(r){return r.text()})
+    .then(function(x){
+      $('klogBody').textContent = x && x.trim() ? x : t('kayitYok');
+      $('klogBody').scrollTop=$('klogBody').scrollHeight})
+    .catch(function(){$('klogBody').textContent=t('logOkunamadi')})}
+
+$('bKlog').onclick=function(){
+  if(!cur)return toast(t('onceSec'),'w');
+  $('mKlog').className='mask on';klogYukle()};
+function closeKlog(){$('mKlog').className='mask'}
+$('klogYenile').onclick=klogYukle;
+$('klogSil').onclick=function(){
+  if(!cur||!confirm(cur+t('klogSilSor')))return;
+  api('/api/log/file/clear?name='+encodeURIComponent(cur),{method:'POST'})
+    .then(function(){toast(t('klogSilindi'),'w');klogYukle()})};
+
+/* -------------------------------------------------------- dokuman */
+var docSrc='', docRaw=false;
+
+function inl(t){
+  return esc(t)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/&amp;mdash;/g,'&mdash;')}
+
+function cells(row){
+  var r=row.trim().replace(/^\|/,'').replace(/\|$/,'');
+  return r.split('|').map(function(c){return inl(c.trim())})}
+
+function md(src){
+  var L=src.split('\n'), o=[], i=0;
+  while(i<L.length){
+    var l=L[i];
+    if(l.indexOf('<!--')===0){while(i<L.length&&L[i].indexOf('-->')<0)i++;i++;continue}
+    if(l.indexOf('```')===0){
+      var buf=[];i++;
+      while(i<L.length&&L[i].indexOf('```')!==0){buf.push(L[i]);i++}
+      i++;o.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>');continue}
+    /* tablo */
+    if(l.trim().indexOf('|')===0&&i+1<L.length&&/^\s*\|[\s:|-]+\|\s*$/.test(L[i+1])){
+      var h=cells(l);i+=2;
+      var t='<table><thead><tr>'+h.map(function(c){return '<th>'+c+'</th>'}).join('')+'</tr></thead><tbody>';
+      while(i<L.length&&L[i].trim().indexOf('|')===0){
+        t+='<tr>'+cells(L[i]).map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>';i++}
+      o.push(t+'</tbody></table>');continue}
+    var m=l.match(/^(#{1,4})\s+(.*)$/);
+    if(m){o.push('<h'+m[1].length+'>'+inl(m[2])+'</h'+m[1].length+'>');i++;continue}
+    if(/^(---+|\*\*\*+)\s*$/.test(l)){o.push('<hr>');i++;continue}
+    if(/^>\s?/.test(l)){
+      var q=[];while(i<L.length&&/^>\s?/.test(L[i])){q.push(L[i].replace(/^>\s?/,''));i++}
+      o.push('<blockquote>'+inl(q.join(' '))+'</blockquote>');continue}
+    if(/^\s*[-*]\s+/.test(l)){
+      var u='<ul>';
+      while(i<L.length&&/^\s*[-*]\s+/.test(L[i])){
+        u+='<li>'+inl(L[i].replace(/^\s*[-*]\s+/,''))+'</li>';i++}
+      o.push(u+'</ul>');continue}
+    if(!l.trim()){i++;continue}
+    var p=[];
+    while(i<L.length&&L[i].trim()&&!/^[#>|`]/.test(L[i])&&!/^\s*[-*]\s+/.test(L[i])){
+      p.push(L[i]);i++}
+    if(p.length)o.push('<p>'+inl(p.join(' '))+'</p>');
+  }
+  return o.join('\n')}
+
+function renderDoc(){
+  $('docBody').innerHTML = docRaw
+    ? '<pre><code>'+esc(docSrc)+'</code></pre>'
+    : md(docSrc);
+  $('docBody').scrollTop=0;
+  $('dRaw').textContent = docRaw ? t('bicimli') : t('hamMetin')}
+
+/* Dokuman: Atolye Defteri (iki dilli egitim belgesi) yeni sekmede.
+   Shift+tik: karttaki kisa docs.md eskisi gibi pencerede. */
+var DEFTER_URL='https://claude.ai/artifact/4G521TULDdx33YyWeC2XnE';
+$('bDoc').onclick=function(e){
+  if(!(e&&e.shiftKey)){window.open(DEFTER_URL+'#'+dil,'_blank');return}
+  $('mDoc').className='mask on';
+  if(docSrc){renderDoc();return}
+  $('docBody').textContent=t('yukleniyor');
+  fetch('/api/docs?dil='+dil).then(function(r){return r.text()}).then(function(x){
+    docSrc=x;renderDoc()})
+   .catch(function(){$('docBody').textContent=t('dokYok')})};
+function closeDoc(){$('mDoc').className='mask'}
+$('dRaw').onclick=function(){docRaw=!docRaw;renderDoc()};
+$('dCopy').onclick=function(){
+  if(!docSrc)return;
+  var done=function(){toast(t('dokKopyalandi'),'g')};
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(docSrc).then(done,fallback)}else fallback();
+  function fallback(){
+    /* HTTP uzerinden clipboard API kapali olur - eski yontem */
+    var ta=document.createElement('textarea');
+    ta.value=docSrc;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');done()}
+    catch(e){toast(t('dokKopyalanamadi'),'w')}
+    document.body.removeChild(ta)}};
+
+/* ------------------------------------------------------------ wifi */
+var dRot=1,dBgr=1;
+$('bCfg').onclick=function(){
+  api('/api/wifi').then(function(c){
+    $('cSsid').value=c.ssid||'';$('cPass').value='';
+    $('cIp').value=c.ip||'';$('cMask').value=c.netmask||'255.255.255.0';
+    $('cGw').value=c.gateway||'';$('cDns').value=c.dns||'';
+    dRot=(c.rotation==null?1:c.rotation);dBgr=c.bgr?1:0;showDisp();
+    if(caps.sd!==false)depoGoster();
+    $('mCfg').className='mask on'})};
+function showDisp(saved){
+  $('dispNow').textContent=t('suAn')+dRot+t('renk')+(dBgr?'BGR':'RGB')
+    +(saved?t('kaydedildiBuyuk'):t('kaydedilmedi'))}
+function applyDisp(save){
+  return api('/api/display?rot='+dRot+'&bgr='+dBgr+'&test=1&save='+(save?1:0),
+    {method:'POST'}).then(function(r){
+      if(r.ok){showDisp(save);if(save)toast(t('ekranKaydedildi'),'g')}
+      else toast(r.error,'e')})}
+function disp(r){dRot=r;applyDisp(0)}
+function setBgr(b){dBgr=b;applyDisp(0)}
+function dispTest(){applyDisp(0)}
+function dispSave(){applyDisp(1)}
+function closeCfg(){$('mCfg').className='mask'}
+/* Depolama: projeler flash'ta mi SD'de mi. Canli gecis, reset yok. */
+function depoGoster(){
+  api('/api/depolama').then(function(d){
+    $('depoNow').textContent=t('depoSuAn')+(d.mod||'-')+' · '+(d.base||'-')
+      +(d.sd_var?t('depoSdVar'):t('depoSdYok'))+(d['not']?' — '+d['not']:'')})}
+function depoMod(m){
+  api('/api/depolama?mod='+m,{method:'POST'}).then(function(r){
+    if(r.ok){toast(t('depoKaydedildi')+m,'g');depoGoster();list()}else toast(r.error,'e')})}
+function depoTasi(h){
+  if(!confirm(t(h==='sd'?'tasiSdSor':'tasiFlashSor')))return;
+  api('/api/tasi?hedef='+h,{method:'POST'}).then(function(r){
+    if(r.ok){toast(t('tasindi')+r.tasinan.length+(r.hatalar.length?(' ('+r.hatalar.length+t('hataVar')+')'):''),
+      r.hatalar.length?'w':'g');if(r.hatalar.length)console.log(r.hatalar);depoGoster();list()}
+    else toast(r.error,'e')})}
+$('cSave').onclick=function(){
+  var b={ssid:$('cSsid').value.trim(),password:$('cPass').value,
+         ip:$('cIp').value.trim(),netmask:$('cMask').value.trim(),
+         gateway:$('cGw').value.trim(),dns:$('cDns').value.trim()};
+  fetch('/api/wifi',{method:'POST',body:JSON.stringify(b)}).catch(function(){});
+  closeCfg();toast(t('wifiKaydedildi'),'w');
+  setTimeout(function(){location.reload()},9000)};
+
+/* ---------------------------------------------------------- editor */
+$('ed').oninput=function(){dirty=true};
+$('ed').onkeydown=function(e){
+  if(e.key==='Tab'){e.preventDefault();var s=this.selectionStart,v=this.value;
+    this.value=v.slice(0,s)+'    '+v.slice(this.selectionEnd);
+    this.selectionStart=this.selectionEnd=s+4;dirty=true}};
+/* Kisayollar her yerde: Ctrl+S kaydet, Ctrl+Enter calistir/durdur,
+   "/" arama (yazi alaninda degilken), Ctrl+K arama, Esc acik pencereyi kapat. */
+document.onkeydown=function(e){
+  var k=e.key,c=e.ctrlKey||e.metaKey,inp=/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'');
+  if(k==='Escape'){var m=document.querySelector('.mask.on');if(m){m.className='mask';return}
+    if(e.target===$('ara')){$('ara').value='';paint();$('ara').blur();return}}
+  if(c&&(k==='s'||k==='S')){e.preventDefault();save(true)}
+  else if(c&&k==='Enter'){e.preventDefault();if(!cur)return toast(t('onceSec'),'w');
+    $('bRun').click()}
+  else if(!inp&&k==='/'){e.preventDefault();$('ara').focus();$('ara').select()}
+  else if(c&&(k==='k'||k==='K')){e.preventDefault();$('ara').focus();$('ara').select()}};
+window.onbeforeunload=function(){if(dirty)return t('kaydedilmemis')};
+
+/* --------------------------------------------------- kart ozellikleri
+   Sistem her kartta ayni; farklar veri olarak geliyor. Desteklenmeyen
+   ozelliklerin dugmelerini gostermenin anlami yok - gizliyoruz. */
+var caps={};
+function gizle(id,varmi){var e=$(id);if(e)e.style.display=varmi?'':'none'}
+api('/api/caps').then(function(r){
+  caps=(r&&r.caps)||{};
+  gizle('bDoc',caps.docs!==false);
+  try{syncBtns()}catch(e){}
+  gizle('depoBox',caps.sd!==false);
+  if(caps.display===false){
+    var r2=$('rotBtns');if(r2&&r2.parentNode)r2.parentNode.style.display='none';
+  }
+}).catch(function(){});
+
+dilUygula();list();status();poll();
+setInterval(status,2000);
+setInterval(poll,900);
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "ssid": "WIFI_ADINIZ",
+  "password": "",
+  "ip": "192.168.0.216",
+  "netmask": "255.255.255.0",
+  "gateway": "192.168.0.1",
+  "dns": "192.168.0.1",
+  "ap_ssid": "ESP-OLED",
+  "ap_password": "cyd12345",
+  "autostart": [],
+  "rotation": 0,
+  "hostname": "esp-oled",
+  "splash": true,
+  "bgr": false,
+  "txpower": null,
+  "cpu_freq": 240,
+  "wifi_pm": false,
+  "disable_bod": false
+}

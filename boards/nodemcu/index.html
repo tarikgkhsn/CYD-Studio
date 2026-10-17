@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYD Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0e1116;--pn:#161b22;--pn2:#1c232c;--ln:#2b3440;--tx:#e6edf3;
+--dim:#8b949e;--acc:#2f9e6e;--acc2:#3fb950;--warn:#d29922;--err:#f85149;--blue:#58a6ff}
+body{background:var(--bg);color:var(--tx);font:13.5px/1.5 ui-monospace,Consolas,monospace;
+height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{background:var(--pn);border-bottom:1px solid var(--ln);padding:9px 13px;
+display:flex;align-items:center;gap:9px;flex-wrap:wrap;flex:none}
+h1{font-size:14px;font-weight:600}h1 i{color:var(--acc2);font-style:normal}
+.p{padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--pn2);
+border:1px solid var(--ln);color:var(--dim);white-space:nowrap}
+.sp{flex:1}
+button{font:inherit;font-size:12.5px;padding:5px 11px;border-radius:6px;
+border:1px solid var(--ln);background:var(--pn2);color:var(--tx);cursor:pointer}
+button:hover{background:#232c37}button:disabled{opacity:.35;cursor:not-allowed}
+button.g{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+button.d{background:#3d1f1f;border-color:#5c2b2b;color:#f0a0a0}
+/* calisma modu secici (secili dosya icin): N normal | T thread | S solo */
+.seg{display:inline-flex;border:1px solid var(--ln);border-radius:6px;overflow:hidden;vertical-align:middle}
+.seg button{border:0;border-radius:0;padding:4px 9px;font-size:11.5px;font-weight:700;color:#8b949e;background:transparent}
+.seg button+button{border-left:1px solid var(--ln)}
+.seg button.on{background:#232d36;color:#e6ecf1}.seg button.on.T{color:#e3b341}.seg button.on.S{color:#f0883e}
+
+main{flex:1;display:flex;min-height:0}
+aside{width:236px;background:var(--pn);border-right:1px solid var(--ln);
+display:flex;flex-direction:column;flex:none}
+.ah{padding:7px 10px;border-bottom:1px solid var(--ln);display:flex;gap:5px;align-items:center}
+.ah b{font-size:11px;color:var(--dim);text-transform:uppercase;flex:1}
+.ah button{padding:2px 7px;font-size:11px}
+#ls{flex:1;overflow-y:auto}
+.f{padding:7px 9px;border-bottom:1px solid #1e252e;display:flex;align-items:center;gap:5px;cursor:pointer}
+.f:hover{background:var(--pn2)}
+.f.sel{background:#132132;box-shadow:inset 3px 0 0 var(--blue)}
+.f.run .n{color:var(--acc2);font-weight:600}
+.f .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.star{color:#3d4653;font-size:12px;cursor:pointer;padding:0 2px}.star.on{color:var(--warn)}
+.f .b{display:flex;gap:3px;flex:none;align-items:center}
+.mod{cursor:pointer;font-size:9px;font-weight:700;padding:0 4px;border-radius:3px;border:1px solid #3d4653;color:#8b949e;line-height:1.5}
+.mod.S{color:#f0883e;border-color:#7a4a1e}
+.f .b button{padding:0 6px;font-size:11px;line-height:1.55}
+#ara{width:100%;font:inherit;font-size:12px;padding:4px 7px;border-radius:5px;
+border:1px solid var(--ln);background:#0b0e13;color:var(--tx);outline:0}
+#ara:focus{border-color:var(--blue)}
+kbd{font:inherit;font-size:10.5px;padding:0 4px;border:1px solid var(--ln);border-radius:3px;background:#0b0e13}
+.col{flex:1;display:flex;flex-direction:column;min-width:0}
+.tb{padding:7px 10px;background:var(--pn);border-bottom:1px solid var(--ln);
+display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:none}
+.nm{font-weight:600;font-size:12.5px;max-width:180px;overflow:hidden;
+text-overflow:ellipsis;white-space:nowrap}
+textarea{flex:1;background:#0b0e13;color:var(--tx);border:0;outline:0;padding:10px;
+font:inherit;resize:none;tab-size:4;min-height:70px}
+.lh{padding:5px 10px;background:var(--pn);border-top:1px solid var(--ln);
+border-bottom:1px solid var(--ln);display:flex;gap:7px;align-items:center;
+font-size:11.5px;color:var(--dim);flex:none}
+.tab{padding:3px 10px;font-size:11.5px;border-radius:999px;background:transparent;border-color:transparent;color:var(--dim)}
+.tab.on{background:var(--pn2);border-color:var(--ln);color:var(--tx)}
+#log{height:190px;background:#080a0e;overflow-y:auto;padding:7px 10px;font-size:12px;
+white-space:pre-wrap;word-break:break-word;flex:none}
+#log .src{color:var(--dim)}#log .sys{color:var(--warn)}
+#tst{position:fixed;bottom:14px;right:14px;background:var(--pn2);border:1px solid var(--ln);
+padding:8px 13px;border-radius:6px;opacity:0;transition:.25s;font-size:12.5px;z-index:30}
+#tst.on{opacity:1}
+.hint{padding:8px 10px;font-size:11px;color:var(--dim);background:var(--pn2);
+border-bottom:1px solid var(--ln);line-height:1.5;flex:none}
+#sys{width:200px;background:var(--pn);border-left:1px solid var(--ln);
+overflow-y:auto;flex:none;padding-bottom:12px}
+.sh{padding:7px 11px;font-size:10.5px;color:var(--dim);text-transform:uppercase;
+letter-spacing:.7px;border-bottom:1px solid var(--ln);background:var(--pn2)}
+.mt{padding:8px 11px;border-bottom:1px solid #1e252e}
+.mt .k{font-size:10.5px;color:var(--dim);display:flex;justify-content:space-between;gap:6px}
+.mt .k span:last-child{color:var(--tx)}
+.bar{height:5px;background:#0b0e13;border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc2);border-radius:3px;transition:width .4s}
+.bar i.mid{background:var(--warn)}.bar i.hi{background:var(--err)}
+.kv{padding:4px 11px;display:flex;justify-content:space-between;gap:6px;font-size:11px}
+.kv span:first-child{color:var(--dim)}
+.kv span:last-child{text-align:right;word-break:break-all}
+.oz{padding:4px 11px;font-size:11px;display:flex;justify-content:space-between}
+.oz span:first-child{color:var(--dim)}
+.oz .y{color:var(--acc2)}.oz .n{color:#5c6773}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;
+justify-content:center;z-index:20;padding:14px}
+.ov[hidden]{display:none}
+.bx{background:var(--pn);border:1px solid var(--ln);border-radius:8px;width:min(680px,100%);
+max-height:92vh;display:flex;flex-direction:column}
+.bh{padding:10px 14px;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:8px;font-weight:600}
+.bb{padding:12px 14px;overflow:auto;display:flex;flex-direction:column;gap:9px}
+.bf{padding:10px 14px;border-top:1px solid var(--ln);display:flex;gap:8px;justify-content:flex-end}
+.fl{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--dim)}
+.fl input,.fl select{font:inherit;font-size:12.5px;padding:6px 8px;border-radius:5px;
+border:1px solid var(--ln);background:#0b0e13;color:var(--tx);outline:0}
+.fl input:focus,.fl select:focus{border-color:var(--blue)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#docTxt{white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5;max-height:64vh;overflow:auto}
+@media(max-width:820px){#sys{display:none}.g2{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#2f3945;border-radius:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CYD<i>·</i>Studio</h1>
+  <span class="p" id="pIp">-</span>
+  <span class="p" id="pRam">-</span>
+  <span class="p" id="pRun">-</span>
+  <span class="sp"></span>
+  <button class="d" id="bStopAll" data-t="tumunuDurdur"></button>
+  <button id="bDoc" data-t="dokuman"></button>
+  <button id="bCfg" data-t="ayarlar"></button>
+  <button id="bDil" title="TR / EN">EN</button>
+  <button id="bRst" data-t="reset"></button>
+</header>
+
+<main>
+  <aside>
+    <div class="ah"><b data-t="projeler"></b>
+      <button id="bNew">+</button><button id="bUp" data-t="yukle"></button>
+      <input type="file" id="fi" multiple hidden></div>
+    <div class="ah"><input id="ara" data-tp="ara" autocomplete="off"></div>
+    <div id="ls"></div>
+  </aside>
+  <div class="col">
+    <div class="hint" id="hint"></div>
+    <div class="tb">
+      <span class="nm" id="nm"></span>
+      <button class="g" id="bSave" data-t="kaydet"></button>
+      <span class="seg" id="modSeg"><button data-mod="normal">N</button><button data-mod="solo">S</button></span>
+      <button class="g" id="bRun">&#9654; <span data-t="calistir"></span></button>
+      <button class="d" id="bDel" data-t="sil"></button>
+    </div>
+    <div id="uyg" class="hint" style="display:none"></div>
+    <textarea id="ed" spellcheck="false" data-tp="edBos"></textarea>
+    <div class="lh">
+      <button class="tab on" id="tKon" data-t="konsol"></button>
+      <button class="tab" id="tKay" data-t="kayitliLog"></button>
+      <span id="lt"></span><span class="sp"></span>
+      <button id="bLr" data-t="yenile"></button><button class="d" id="bLc" data-t="temizle"></button></div>
+    <div id="log"></div>
+  </div>
+
+  <div id="sys">
+    <div class="sh" data-t="sistem"></div>
+    <div class="mt">
+      <div class="k"><span data-t="pyRam"></span><span id="mRam">-</span></div>
+      <div class="bar"><i id="bRam" style="width:0"></i></div>
+    </div>
+    <div class="mt">
+      <div class="k"><span>Flash</span><span id="mFl">-</span></div>
+      <div class="bar"><i id="bFl" style="width:0"></i></div>
+    </div>
+    <div class="sh" data-t="kart"></div>
+    <div class="kv"><span data-t="platform"></span><span id="mPlat">-</span></div>
+    <div class="kv"><span data-t="frekans"></span><span id="mFreq">-</span></div>
+    <div class="kv"><span data-t="calisma"></span><span id="mUp">-</span></div>
+    <div class="sh" data-t="ag"></div>
+    <div class="kv"><span>IP</span><span id="mIp">-</span></div>
+    <div class="kv"><span data-t="sinyal"></span><span id="mRssi">-</span></div>
+    <div class="sh" data-t="ozellikler"></div>
+    <div id="ozl"></div>
+  </div>
+</main>
+<div id="tst"></div>
+
+<!-- Ayarlar -->
+<div class="ov" id="ovCfg" hidden>
+  <div class="bx">
+    <div class="bh"><span data-t="ayarlar"></span><span class="sp"></span><span id="cNet" style="font-weight:400;color:var(--dim);font-size:11.5px"></span></div>
+    <div class="bb">
+      <div class="fl"><span data-t="ssid"></span>
+        <div style="display:flex;gap:6px"><input id="cSsid" style="flex:1"><button id="bScan" data-t="tara"></button></div>
+        <select id="cList" hidden></select></div>
+      <div class="fl"><span data-t="sifre"></span><input id="cPass" type="password" data-tp="sifreNot"></div>
+      <div class="g2">
+        <div class="fl"><span data-t="statikIp"></span><input id="cIp" placeholder="192.168.1.215"></div>
+        <div class="fl"><span data-t="maske"></span><input id="cMask" placeholder="255.255.255.0"></div>
+        <div class="fl"><span data-t="gecit"></span><input id="cGw" placeholder="192.168.1.1"></div>
+        <div class="fl"><span>DNS</span><input id="cDns" placeholder="192.168.1.1"></div>
+      </div>
+      <div class="fl"><span data-t="hostname"></span><input id="cHost" placeholder="esp8266"></div>
+    </div>
+    <div class="bf"><button id="bCfgX" data-t="kapat"></button><button class="g" id="bCfgOk" data-t="ayarKaydet"></button></div>
+  </div>
+</div>
+
+<!-- Dokuman -->
+<div class="ov" id="ovDoc" hidden>
+  <div class="bx">
+    <div class="bh"><span data-t="dokuman"></span><span class="sp"></span>
+      <button id="bDocCp" data-t="kopyala"></button><button id="bDocX" data-t="kapat"></button></div>
+    <div class="bb"><div id="docTxt"></div></div>
+  </div>
+</div>
+
+<script>
+// ------------------------------------------------------------- dil
+var DIL={
+tr:{uygulamalar:'Uygulamalar:',projeler:'Projeler',yukle:'yükle',ara:'ara…  ( / )',dosyaYok:'dosya seçilmedi',kaydet:'Kaydet',
+calistir:'Çalıştır',durdur:'Durdur',tumunuDurdur:'Tümünü durdur',sil:'Sil',konsol:'Konsol',kayitliLog:'Kayıtlı log',yenile:'Yenile',
+soloCalistir:'Solo başlat',modN:'Normal — panel açık, diğer projelerle yan yana (tıkla: Solo yap)',modS:'Solo — panel kapalı, tüm RAM projenin (tıkla: Normal yap)',modKaydedildi:'mod: ',
+temizle:'Temizle',dokuman:'Doküman',ayarlar:'Ayarlar',reset:'Yeniden başlat',sistem:'Sistem',
+pyRam:'Python RAM',kart:'Kart',platform:'Platform',frekans:'Frekans',calisma:'Çalışma',ag:'Ağ',
+sinyal:'Sinyal',ozellikler:'Özellikler',bosta:'boşta',calisiyor:'çalışıyor: ',
+edBos:'Soldan dosya seç ya da + ile oluştur.',
+soloTip:'Panel kapanır, proje tüm RAM\'i alır; RESET geri getirir',
+hint_html:'<b>Çalıştır</b> projeyi panel açıkken çalıştırır: proje ile sunucu sırayla koşar, proje her '+
+'<b>cyd.sleep()</b> dediğinde panele sıra gelir. Aynı anda tek proje; <b>Durdur</b> bayrağı kaldırır. '+
+'<b>Konsol</b> canlı çıktı, <b>Kayıtlı log</b> proje başına 8 KB kalıcı dosya. <b>Solo</b> eski yol: '+
+'panel kapanır, proje tüm RAM\'i alır, RESET geri getirir. <b>cyd.sleep()</b> çağırmayan proje paneli düşürür — onun için Solo. '+
+'&nbsp; Kısayollar: <kbd>Ctrl+S</kbd> kaydet · <kbd>Ctrl+Enter</kbd> çalıştır/durdur · <kbd>/</kbd> arama · <kbd>Esc</kbd> kapat',
+onceSec:'önce bir dosya seç',baslatildi:' başlatıldı — panel açık',baslatilamadi:'başlatılamadı',
+istekHata:'istek başarısız',durduruluyor:' durduruluyor',durdurulamadi:'durdurulamadı',silSor:' silinsin mi?',
+silindi:'silindi',kaydedildi:'kaydedildi',yildizAc:' açılışta başlar',yildizKapa:' açılıştan çıkarıldı',
+eslesenYok:'eşleşen yok',dosyaYokListe:'Dosya yok',
+soloSor:' SOLO çalıştırılacak.\n\nKart yeniden başlar, panel KAPANIR.\nÇıktı kalıcı loga yazılır.\n\nPaneli geri getirmek için karta RESET at.\n\nDevam?',
+soloBas:'solo başlatılıyor — panel kapanacak',logSor:'Kayıtlı log silinsin mi?',logSilindi:'log silindi',
+kayitYok:'Kayıt yok.\n\nProjeyi çalıştır: çıktısı buraya yazılır ve reset atsan bile durur.',
+logHata:'log okunamadı',konsolBos:'Konsol boş. Bir proje çalıştır, çıktısı burada canlı akar.',
+konsolSilindi:'konsol temizlendi',dosyaAdi:'Dosya adı:',yuklendi:' dosya yüklendi',
+resetSor:'Kart yeniden başlatılsın mı?',resetOk:'yeniden başlatılıyor…',baglantiYok:'bağlantı yok',
+kirli:'Kaydedilmemiş değişiklik var, yine de açılsın mı?',ayarKaydet:'Kaydet ve yeniden başlat',
+kapat:'Kapat',tara:'Tara',taraniyor:'taranıyor…',agYok:'ağ bulunamadı',
+sifreNot:'boş bırakılırsa eski şifre kalır',ayarOk:'kaydedildi — kart yeniden başlıyor',
+kopyala:'Kopyala',kopyalandi:'panoya kopyalandı',dokYok:'doküman yok (docs.md yüklenmemiş)',
+var:'var',yok:'yok',ayniAnda:'Aynı anda proje',hostname:'Ana makine adı',ssid:'Ağ adı (SSID)',
+sifre:'Şifre',statikIp:'Statik IP (boş = DHCP)',maske:'Alt ağ maskesi',gecit:'Ağ geçidi',mevcut:'şu an: ',
+oz:{display:'Ekran',touch:'Dokunmatik',sd:'SD kart',rgb_led:'LED',light:'Işık sensörü',speaker:'Hoparlör',
+ble:'Bluetooth',tls:'HTTPS',threads:'Thread',inline:'Satır içi proje',persistent_log:'Kalıcı log',
+wifi_config:'Ağ ayarı',docs:'Doküman'}},
+en:{uygulamalar:'Apps:',projeler:'Projects',yukle:'upload',ara:'search…  ( / )',dosyaYok:'no file selected',kaydet:'Save',
+calistir:'Run',durdur:'Stop',tumunuDurdur:'Stop all',sil:'Delete',konsol:'Console',kayitliLog:'Saved log',yenile:'Refresh',
+soloCalistir:'Start solo',modN:'Normal — panel stays up, runs beside other projects (click: make Solo)',modS:'Solo — panel off, all RAM to the project (click: make Normal)',modKaydedildi:'mode: ',
+temizle:'Clear',dokuman:'Docs',ayarlar:'Settings',reset:'Restart',sistem:'System',
+pyRam:'Python RAM',kart:'Board',platform:'Platform',frekans:'Clock',calisma:'Uptime',ag:'Network',
+sinyal:'Signal',ozellikler:'Features',bosta:'idle',calisiyor:'running: ',
+edBos:'Pick a file on the left or create one with +.',
+soloTip:'Panel goes down, the project gets all RAM; RESET brings it back',
+hint_html:'<b>Run</b> starts the project with the panel open: project and server take turns, the panel gets a slice '+
+'every time the project calls <b>cyd.sleep()</b>. One project at a time; <b>Stop</b> raises the flag. '+
+'<b>Console</b> is live output, <b>Saved log</b> is the 8 KB per-project file that survives resets. <b>Solo</b> is the old way: '+
+'panel closes, project gets all RAM, RESET brings the panel back. A project that never calls <b>cyd.sleep()</b> starves the panel — use Solo for those. '+
+'&nbsp; Shortcuts: <kbd>Ctrl+S</kbd> save · <kbd>Ctrl+Enter</kbd> run/stop · <kbd>/</kbd> search · <kbd>Esc</kbd> close',
+onceSec:'select a file first',baslatildi:' started — panel stays up',baslatilamadi:'could not start',
+istekHata:'request failed',durduruluyor:' stopping',durdurulamadi:'could not stop',silSor:' — delete?',
+silindi:'deleted',kaydedildi:'saved',yildizAc:' runs at boot',yildizKapa:' removed from boot',
+eslesenYok:'no match',dosyaYokListe:'No files',
+soloSor:' will run SOLO.\n\nThe board restarts, the panel CLOSES.\nOutput goes to the saved log.\n\nPress RESET to get the panel back.\n\nContinue?',
+soloBas:'starting solo — panel will close',logSor:'Delete the saved log?',logSilindi:'log deleted',
+kayitYok:'No log yet.\n\nRun the project: its output lands here and survives resets.',
+logHata:'could not read log',konsolBos:'Console is empty. Run a project and its output streams here.',
+konsolSilindi:'console cleared',dosyaAdi:'File name:',yuklendi:' file(s) uploaded',
+resetSor:'Restart the board?',resetOk:'restarting…',baglantiYok:'no connection',
+kirli:'Unsaved changes — open anyway?',ayarKaydet:'Save and restart',
+kapat:'Close',tara:'Scan',taraniyor:'scanning…',agYok:'no networks found',
+sifreNot:'leave empty to keep the current password',ayarOk:'saved — board is restarting',
+kopyala:'Copy',kopyalandi:'copied to clipboard',dokYok:'no docs (docs.md not uploaded)',
+var:'yes',yok:'no',ayniAnda:'Projects at once',hostname:'Hostname',ssid:'Network (SSID)',
+sifre:'Password',statikIp:'Static IP (empty = DHCP)',maske:'Netmask',gecit:'Gateway',mevcut:'now: ',
+oz:{display:'Display',touch:'Touch',sd:'SD card',rgb_led:'LED',light:'Light sensor',speaker:'Speaker',
+ble:'Bluetooth',tls:'HTTPS',threads:'Threads',inline:'Inline projects',persistent_log:'Saved log',
+wifi_config:'Network setup',docs:'Docs'}}};
+var dil='tr';try{dil=localStorage.getItem('dil')||'tr'}catch(e){}
+function t(k){var d=DIL[dil]||DIL.tr;return (k in d)?d[k]:(DIL.tr[k]||k)}
+function dilUygula(){
+  document.documentElement.lang=dil;
+  var i,e=document.querySelectorAll('[data-t]');for(i=0;i<e.length;i++)e[i].textContent=t(e[i].dataset.t);
+  e=document.querySelectorAll('[data-tp]');for(i=0;i<e.length;i++)e[i].placeholder=t(e[i].dataset.tp);
+  e=document.querySelectorAll('[data-tt]');for(i=0;i<e.length;i++)e[i].title=t(e[i].dataset.tt);
+  try{dugmeler()}catch(e2){}
+  $('hint').innerHTML=t('hint_html');
+  $('bDil').textContent=dil==='tr'?'EN':'TR';
+  if(!cur)$('nm').textContent=t('dosyaYok');
+  if(caps)ozellikleriCiz(caps);ciz();durumYaz()}
+$('bDil').onclick=function(){dil=dil==='tr'?'en':'tr';try{localStorage.setItem('dil',dil)}catch(e){}dilUygula()};
+
+// ------------------------------------------------------------- temel
+var cur=null,files=[],st={},dirty=false,calisan=[],caps=null,sekmeAd='kon',seq=0,konsolSatir=0;
+function $(i){return document.getElementById(i)}
+function tst(m){var x=$('tst');x.textContent=m;x.className='on';
+  clearTimeout(x._t);x._t=setTimeout(function(){x.className=''},2600)}
+function api(p,o){return fetch(p,o).then(function(r){
+  var c=r.headers.get('content-type')||'';
+  return c.indexOf('json')>=0?r.json():r.text()})}
+function fmt(n){if(n==null)return '-';if(n<1024)return n+' B';
+  if(n<1048576)return (n/1024).toFixed(1)+' KB';return (n/1048576).toFixed(2)+' MB'}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function sure(s){if(s==null)return '-';var h=Math.floor(s/3600);s%=3600;
+  var d=Math.floor(s/60);s%=60;if(h)return h+'h '+d+'m';if(d)return d+'m '+s+'s';return s+' s'}
+function cubuk(el,kul,top){var p=top?Math.round(kul/top*100):0;
+  el.style.width=Math.min(100,p)+'%';el.className=p>88?'hi':(p>65?'mid':'')}
+
+// ------------------------------------------------------------- durum
+function durumYaz(){
+  $('pRun').textContent=calisan.length?(t('calisiyor')+calisan.join(', ')):t('bosta');
+  $('pRun').style.color=calisan.length?'var(--acc2)':''}
+function durum(){
+  api('/api/status').then(function(s){
+    st=s;
+    $('pIp').textContent=s.ip||'-';
+    $('pRam').textContent='RAM '+fmt(s.ram_free);
+    $('mRam').textContent=fmt(s.ram_free)+' / '+fmt(s.ram_total);
+    cubuk($('bRam'),s.ram_total-s.ram_free,s.ram_total);
+    $('mFl').textContent=fmt(s.flash_free)+' / '+fmt(s.flash_total);
+    cubuk($('bFl'),s.flash_total-s.flash_free,s.flash_total);
+    $('mPlat').textContent=s.platform||'-';
+    $('mFreq').textContent=s.freq?(s.freq/1000000)+' MHz':'-';
+    $('mUp').textContent=sure(s.uptime);
+    $('mIp').textContent=s.ip||'-';
+    $('mRssi').textContent=(s.rssi==null)?'-':s.rssi+' dBm';
+    calisan=(s.jobs||[]).filter(function(j){return j.running}).map(function(j){return j.name});
+    durumYaz();ciz();dugmeler();
+    // Projelerin cyd.rota() ile actigi sayfalar - ayni portta, tiklanabilir.
+    var R=s.rotalar||[],U=$('uyg');
+    if(R.length){U.style.display='';U.innerHTML=t('uygulamalar')+' '+R.map(function(r){
+      return '<a href="'+esc(r.yol)+'" target="_blank" style="color:var(--blue);margin-right:6px">'+esc(r.yol)+'</a>'
+        +'<span style="color:var(--dim);margin-right:12px">('+esc(r.proje)+')</span>'}).join('')}
+    else U.style.display='none';
+    if(sekmeAd==='kay'&&cur&&calisan.indexOf(cur)>=0)logSessiz();
+  }).catch(function(){$('pIp').textContent=t('baglantiYok')})}
+
+function ozellikleriCiz(c){
+  var h='',ad=t('oz'),k;
+  for(k in ad){if(!(k in c))continue;
+    h+='<div class="oz"><span>'+ad[k]+'</span><span class="'+(c[k]?'y':'n')+'">'+(c[k]?t('var'):t('yok'))+'</span></div>'}
+  h+='<div class="oz"><span>'+t('ayniAnda')+'</span><span class="y">'+(c.max_jobs||1)+'</span></div>';
+  $('ozl').innerHTML=h}
+api('/api/caps').then(function(r){caps=(r&&r.caps)||{};ozellikleriCiz(caps)}).catch(function(){});
+
+// ------------------------------------------------------------- liste
+var modlar={};
+function liste(){return api('/api/list').then(function(r){files=r.files||[];modlar=r.modlar||{};ciz()})}
+// Calisma modu cipi: N normal (varsayilan) | S solo. Bu kartta thread yok.
+function modOf(n){return modlar[n]==='solo'?'solo':'normal'}
+function modAyarla(n,m){
+  api('/api/mod?name='+encodeURIComponent(n)+'&mod='+m,{method:'POST'}).then(function(r){
+    if(r&&r.ok){modlar=r.modlar||modlar;tst(t('modKaydedildi')+m);ciz();dugmeler()}else tst((r&&r.error)||'?')})}
+function modDegis(n){modAyarla(n,modOf(n)==='normal'?'solo':'normal')}
+/* Tek dugme: kosuyorsa Durdur, degilse Calistir (S modunda Solo baslat). */
+function dugmeler(){
+  var running=!!cur&&calisan.indexOf(cur)>=0,m=cur?modOf(cur):'normal',r=$('bRun');
+  r.disabled=!cur;r.className=running?'d':'g';
+  r.innerHTML=(running?'&#9632; ':'&#9654; ')+'<span>'+esc(running?t('durdur'):(m==='solo'?t('soloCalistir'):t('calistir')))+'</span>';
+  $('bDel').disabled=!cur||running;
+  var bs=$('modSeg').querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){var b=bs[i],mm=b.dataset.mod;
+    b.className=(mm===m?'on ':'')+(mm==='solo'?'S':'N');b.disabled=!cur||running;
+    b.title=t(mm==='solo'?'modS':'modN')}}
+$('modSeg').onclick=function(e){var b=e.target.closest('button');if(!b||b.disabled||!cur)return;modAyarla(cur,b.dataset.mod)};
+// Arama Türkçe harfleri katlar: "söndür" yazan da "sondur"u bulsun.
+function kat(s){return String(s).toLowerCase().replace(/ş/g,'s').replace(/ö/g,'o')
+  .replace(/ü/g,'u').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/i̇/g,'i')}
+function ciz(){
+  var q=kat($('ara').value.trim()),h='';
+  files.forEach(function(f){
+    if(q&&kat(f.name).indexOf(q)<0)return;
+    var a=(st.autostart||[]).indexOf(f.name)>=0,r=calisan.indexOf(f.name)>=0,n=esc(f.name);
+    h+='<div class="f'+(f.name===cur?' sel':'')+(r?' run':'')+'" data-n="'+n+'">'
+      +'<span class="star'+(a?' on':'')+'" data-s="'+n+'">&#9733;</span>'
+      +'<span class="n" title="'+n+'">'+n+'</span><span class="b">'
+      +(f.py&&!r?'<span class="mod'+(modOf(f.name)==='solo'?' S':'')+'" data-m="'+n+'" title="'+t(modOf(f.name)==='solo'?'modS':'modN')+'">'+(modOf(f.name)==='solo'?'S':'N')+'</span>':'')
+      +(r?'<button class="d" data-x="'+n+'" title="'+t('durdur')+'">&#9632;</button>'
+         :'<button class="g" data-r="'+n+'" title="'+t('calistir')+'">&#9654;</button>')
+      +'<button data-d="'+n+'" title="'+t('sil')+'">&#10005;</button></span></div>'});
+  $('ls').innerHTML=h||'<div style="padding:12px;color:#8b949e;font-size:11px">'+(q?t('eslesenYok'):t('dosyaYokListe'))+'</div>'}
+$('ls').onclick=function(e){
+  var x=e.target,d=x.dataset||{};
+  if(d.m){e.stopPropagation();return modDegis(d.m)}
+  if(d.r){e.stopPropagation();return modOf(d.r)==='solo'?solo(d.r):calistir(d.r)}
+  if(d.x){e.stopPropagation();return durdur(d.x)}
+  if(d.d){e.stopPropagation();return sil(d.d)}
+  if(d.s){e.stopPropagation();return yildiz(d.s)}
+  var el=x.closest('.f');if(el&&el.dataset.n)ac(el.dataset.n)};
+$('ara').oninput=ciz;
+$('ara').onkeydown=function(e){if(e.key==='Escape'){this.value='';ciz();this.blur()}};
+
+function ac(n){
+  if(dirty&&!confirm(t('kirli')))return;
+  api('/api/file?name='+encodeURIComponent(n)).then(function(x){
+    // Kart hata JSON'u donerse editore YAZMA: "[object Object]" gorunuyordu ve
+    // Ctrl+S dosyayi bununla eziyordu (i2c_tara.py, 4 KB, RAM'e sigmadi)
+    if(typeof x!=='string'){tst((x&&x.error)||'dosya okunamadi');return}
+    cur=n;dirty=false;$('nm').textContent=n;$('ed').value=x;ciz();dugmeler();
+    if(sekmeAd==='kay')logYukle()})}
+
+function kaydet(zorla){
+  if(!cur)return Promise.resolve();
+  if(!zorla&&!dirty)return Promise.resolve();
+  return fetch('/api/save?name='+encodeURIComponent(cur),{method:'POST',body:$('ed').value})
+    .then(function(r){return r.json()})
+    .then(function(r){if(r.ok){dirty=false;tst(t('kaydedildi'));liste()}else tst(r.error)})}
+
+function calistir(n){
+  var p=(n===cur)?kaydet(false):Promise.resolve();
+  p.then(function(){return api('/api/run?name='+encodeURIComponent(n),{method:'POST'})})
+   .then(function(r){
+     if(r&&r.ok){tst(n+t('baslatildi'));sekme('kon');setTimeout(durum,800)}
+     else tst((r&&r.error)||t('baslatilamadi'))})
+   .catch(function(){tst(t('istekHata'))})}
+function durdur(n){
+  api('/api/stop?name='+encodeURIComponent(n),{method:'POST'}).then(function(r){
+    tst(r&&r.ok?n+t('durduruluyor'):((r&&r.error)||t('durdurulamadi')));
+    setTimeout(durum,1200)}).catch(function(){tst(t('istekHata'))})}
+function sil(n){
+  if(!confirm(n+t('silSor')))return;
+  api('/api/delete?name='+encodeURIComponent(n),{method:'POST'}).then(function(r){
+    if(r.ok){tst(t('silindi'));
+      if(n===cur){cur=null;$('ed').value='';$('nm').textContent=t('dosyaYok')}
+      liste()}else tst(r.error)})}
+function yildiz(n){
+  var on=(st.autostart||[]).indexOf(n)>=0?0:1;
+  api('/api/autostart?name='+encodeURIComponent(n)+'&on='+on,{method:'POST'}).then(function(r){
+    if(r.ok){st.autostart=r.autostart||[];ciz();tst(n+(on?t('yildizAc'):t('yildizKapa')))}
+    else tst(r.error)})}
+
+$('bSave').onclick=function(){kaydet(true)};
+$('ed').oninput=function(){dirty=true};
+$('ed').onkeydown=function(e){
+  if(e.key==='Tab'){e.preventDefault();var s=this.selectionStart;
+    this.value=this.value.slice(0,s)+'    '+this.value.slice(this.selectionEnd);
+    this.selectionStart=this.selectionEnd=s+4;dirty=true}};
+$('bRun').onclick=function(){if(!cur)return tst(t('onceSec'));
+  if(calisan.indexOf(cur)>=0)return durdur(cur);
+  if(modOf(cur)==='solo')return soloRun();
+  calistir(cur)};
+$('bDel').onclick=function(){if(!cur)return tst(t('onceSec'));sil(cur)};
+$('bStopAll').onclick=function(){api('/api/stopall',{method:'POST'}).then(function(r){
+  tst(r&&r.ok?t('durduruluyor'):((r&&r.error)||'?'));setTimeout(durum,800)})};
+function solo(n){cur=n;$('nm').textContent=n;soloRun()}   /* satirdaki S cipi + play */
+function soloRun(){
+  if(!cur)return tst(t('onceSec'));
+  if(!confirm(cur+t('soloSor')))return;
+  kaydet(false).then(function(){
+    return fetch('/api/solo?name='+encodeURIComponent(cur)+'&wifi=1',{method:'POST'})}).catch(function(){});
+  tst(t('soloBas'));setTimeout(function(){location.reload()},12000)};
+
+// ------------------------------------------------------------- log sekmeleri
+// Konsol: RAM'deki halka tampon, /api/log?since= ile arti satirlar. Kayitli:
+// proje basina 8 KB dosya, reset'ten sonra da durur.
+function sekme(a){
+  sekmeAd=a;$('tKon').className='tab'+(a==='kon'?' on':'');$('tKay').className='tab'+(a==='kay'?' on':'');
+  if(a==='kon'){$('lt').textContent='';$('log').innerHTML='';konsolSatir=0;seq=0;konsolCek()}
+  else logYukle()}
+$('tKon').onclick=function(){sekme('kon')};$('tKay').onclick=function(){sekme('kay')};
+function konsolCek(){
+  if(sekmeAd!=='kon')return;
+  api('/api/log?since='+seq).then(function(r){
+    if(!r||!r.lines)return;
+    if(r.seq<seq){seq=0;$('log').innerHTML='';konsolSatir=0}   // kart resetlendi
+    var l=$('log'),altta=l.scrollTop+l.clientHeight>=l.scrollHeight-8,h='',ilk=(konsolSatir===0);
+    r.lines.forEach(function(x){
+      var src=x[1],ln=x[2];
+      h+='<div class="ln'+(src==='sistem'?' sys':'')+'">'+(src!==cur?'<span class="src">['+esc(src)+'] </span>':'')+esc(ln)+'</div>';
+      seq=x[0];konsolSatir++});
+    if(h){if(ilk)l.innerHTML='';                       // "konsol bos" yazisini kaldir
+      l.insertAdjacentHTML('beforeend',h);
+      while(l.children.length>300)l.removeChild(l.firstChild);
+      if(altta)l.scrollTop=l.scrollHeight}
+    else if(ilk&&!l.textContent)l.textContent=t('konsolBos')}).catch(function(){})}
+setInterval(konsolCek,1500);
+function logYukle(){
+  if(!cur){$('log').textContent=t('onceSec');return}
+  $('lt').textContent=cur;$('log').textContent='…';
+  fetch('/api/log/file?name='+encodeURIComponent(cur)).then(function(r){return r.text()})
+    .then(function(x){$('log').textContent=x&&x.trim()?x:t('kayitYok');$('log').scrollTop=$('log').scrollHeight})
+    .catch(function(){$('log').textContent=t('logHata')})}
+function logSessiz(){
+  if(!cur||sekmeAd!=='kay')return;
+  fetch('/api/log/file?name='+encodeURIComponent(cur)).then(function(r){return r.text()})
+    .then(function(x){if(!x||!x.trim())return;var l=$('log');
+      var altta=l.scrollTop+l.clientHeight>=l.scrollHeight-8;l.textContent=x;if(altta)l.scrollTop=l.scrollHeight}).catch(function(){})}
+$('bLr').onclick=function(){sekmeAd==='kon'?konsolCek():logYukle()};
+$('bLc').onclick=function(){
+  if(sekmeAd==='kon'){api('/api/log/clear',{method:'POST'}).catch(function(){});
+    $('log').innerHTML='';konsolSatir=0;tst(t('konsolSilindi'));return}
+  if(!cur||!confirm(t('logSor')))return;
+  api('/api/log/file/clear?name='+encodeURIComponent(cur),{method:'POST'})
+    .then(function(){tst(t('logSilindi'));logYukle()})};
+
+// ------------------------------------------------------------- dosya islemleri
+$('bNew').onclick=function(){
+  var n=prompt(t('dosyaAdi'),'proje.py');if(!n)return;
+  if(n.indexOf('.')<0)n+='.py';
+  fetch('/api/save?name='+encodeURIComponent(n),{method:'POST',
+    body:'# '+n+'\nimport cyd\n\nfor i in range(10):\n    print("merhaba", i)\n    cyd.sleep(1)\n'})
+   .then(function(){liste().then(function(){ac(n)})})};
+$('bUp').onclick=function(){$('fi').click()};
+$('fi').onchange=function(e){
+  var a=Array.prototype.slice.call(e.target.files),i=0;
+  (function nx(){
+    if(i>=a.length){liste();return tst(a.length+t('yuklendi'))}
+    var f=a[i++];
+    f.arrayBuffer().then(function(b){
+      return fetch('/api/save?name='+encodeURIComponent(f.name),{method:'POST',body:b})})
+     .then(nx).catch(nx)})();
+  e.target.value=''};
+$('bRst').onclick=function(){
+  if(!confirm(t('resetSor')))return;
+  api('/api/reset',{method:'POST'}).catch(function(){});
+  tst(t('resetOk'));setTimeout(function(){location.reload()},10000)};
+
+// ------------------------------------------------------------- ayarlar
+$('bCfg').onclick=function(){
+  api('/api/wifi').then(function(c){
+    $('cSsid').value=c.ssid||'';$('cPass').value='';$('cIp').value=c.ip||'';
+    $('cMask').value=c.netmask||'';$('cGw').value=c.gateway||'';$('cDns').value=c.dns||'';
+    $('cHost').value=c.hostname||'';$('cList').hidden=true;
+    var n=c.net||{};$('cNet').textContent=t('mevcut')+(n.ip||'-')+(n.mode?' ('+n.mode+')':'');
+    $('ovCfg').hidden=false;$('cSsid').focus()}).catch(function(){tst(t('istekHata'))})};
+$('bCfgX').onclick=function(){$('ovCfg').hidden=true};
+$('bScan').onclick=function(){
+  $('bScan').disabled=true;$('bScan').textContent=t('taraniyor');
+  api('/api/scan').then(function(r){
+    var L=$('cList'),n=(r&&r.networks)||[];L.innerHTML='';
+    if(!n.length){tst(t('agYok'));L.hidden=true;return}
+    n.forEach(function(x){var o=document.createElement('option');
+      o.value=x.ssid;o.textContent=x.ssid+'  ('+x.rssi+' dBm'+(x.secure?', 🔒':'')+')';L.appendChild(o)});
+    L.hidden=false;L.onchange=function(){$('cSsid').value=L.value}})
+   .catch(function(){tst(t('istekHata'))})
+   .then(function(){$('bScan').disabled=false;$('bScan').textContent=t('tara')})};
+$('bCfgOk').onclick=function(){
+  var b={ssid:$('cSsid').value.trim(),password:$('cPass').value,ip:$('cIp').value.trim(),
+    netmask:$('cMask').value.trim(),gateway:$('cGw').value.trim(),dns:$('cDns').value.trim(),
+    hostname:$('cHost').value.trim()};
+  fetch('/api/wifi',{method:'POST',body:JSON.stringify(b)}).catch(function(){});
+  $('ovCfg').hidden=true;tst(t('ayarOk'));setTimeout(function(){location.reload()},12000)};
+
+// ------------------------------------------------------------- dokuman
+/* Dokuman: Atolye Defteri (iki dilli egitim belgesi) yeni sekmede.
+   Shift+tik: karttaki kisa docs.md eskisi gibi pencerede. */
+var DEFTER_URL='https://claude.ai/artifact/4G521TULDdx33YyWeC2XnE';
+$('bDoc').onclick=function(e){
+  if(!(e&&e.shiftKey)){window.open(DEFTER_URL+'#'+dil,'_blank');return}
+  $('docTxt').textContent='…';$('ovDoc').hidden=false;
+  fetch('/api/docs?dil='+dil).then(function(r){return r.ok?r.text():''}).then(function(x){
+    $('docTxt').textContent=x&&x.trim()?x:t('dokYok')}).catch(function(){$('docTxt').textContent=t('dokYok')})};
+$('bDocX').onclick=function(){$('ovDoc').hidden=true};
+$('bDocCp').onclick=function(){
+  var x=$('docTxt').textContent;
+  function ok(){tst(t('kopyalandi'))}
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(x).then(ok,function(){yedek()});
+  else yedek();
+  function yedek(){var ta=document.createElement('textarea');ta.value=x;document.body.appendChild(ta);
+    ta.select();try{document.execCommand('copy');ok()}catch(e){}document.body.removeChild(ta)}};
+
+// ------------------------------------------------------------- kisayollar
+document.onkeydown=function(e){
+  var k=e.key,c=e.ctrlKey||e.metaKey,inp=/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'');
+  if(k==='Escape'){if(!$('ovCfg').hidden){$('ovCfg').hidden=true;return}if(!$('ovDoc').hidden){$('ovDoc').hidden=true;return}}
+  if(c&&(k==='s'||k==='S')){e.preventDefault();kaydet(true)}
+  else if(c&&k==='Enter'){e.preventDefault();if(!cur)return tst(t('onceSec'));
+    if(calisan.indexOf(cur)>=0)durdur(cur);else calistir(cur)}
+  else if(!inp&&k==='/'){e.preventDefault();$('ara').focus();$('ara').select()}
+  else if(c&&(k==='k'||k==='K')){e.preventDefault();$('ara').focus();$('ara').select()}};
+
+dilUygula();liste();durum();setInterval(durum,5000);konsolCek();
+</script>
+</body>
+</html>
